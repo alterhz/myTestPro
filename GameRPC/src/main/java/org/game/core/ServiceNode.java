@@ -1,7 +1,10 @@
 package org.game.core;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -17,6 +20,13 @@ public class ServiceNode {
     public ServiceNode(String name, ExecutorService executorService) {
         this.name = name;
         this.executorService = executorService;
+    }
+
+    public void addRpcInvocation(byte[] buffer) throws IOException {
+        final RpcInvocation rpcInvocation = RpcInvocation.decode(buffer);
+        final String portName = rpcInvocation.getCallPoint().getPort();
+        final ServicePort servicePort = servicePorts.get(portName);
+        servicePort.addRpcInvocation(rpcInvocation);
     }
 
     public void addServicePort(ServicePort servicePort) {

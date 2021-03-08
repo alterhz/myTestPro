@@ -57,8 +57,6 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         // 当前线程的调用点
         final FromPoint fromPoint = ServicePort.getFromPoint();
 
-
-
         // rpc调用
         final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, methodName, args);
         rpcInvocation.invoke();
@@ -72,8 +70,8 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
      */
     private CallPoint getServiceCallPoint() {
         final ServiceConfig serviceConfig = type.getAnnotation(ServiceConfig.class);
-        final Class<?> cServiceImpl = serviceConfig.serviceImplType();
-        return new CallPoint(serviceConfig.node(), serviceConfig.port(), cServiceImpl.getName());
+        final String serviceName = type.getName();
+        return new CallPoint(serviceConfig.node(), serviceConfig.port(), serviceName);
     }
 
 }

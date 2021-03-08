@@ -4,8 +4,11 @@ import java.util.concurrent.Executors;
 
 import org.game.core.ServiceNode;
 import org.game.core.ServicePort;
+import org.game.core.refer.ReferenceFactory;
 import org.game.provider.DemoServiceImpl;
+import org.game.provider.LoginServiceImpl;
 import org.game.service.DemoService;
+import org.game.service.LoginService;
 
 public class StartUp {
 
@@ -25,8 +28,13 @@ public class StartUp {
         serviceNode.addServicePort(new ServicePort("port2", serviceNode));
         serviceNode.addServicePort(new ServicePort("port3", serviceNode));
 
-        final DemoServiceImpl demoService = new DemoServiceImpl();
-        serviceNode.getServicePort("port0").addService(DemoService.class.getName(), demoService);
+        serviceNode.getServicePort("port0").addService(DemoService.class.getName(),
+                                                       new DemoServiceImpl());
+        serviceNode.getServicePort("port0").addService(LoginService.class.getName(),
+                                                       new LoginServiceImpl());
+
+        serviceNode.startAllService();
+
 
 //        final Reflections reflections = new Reflections("org.game.service");
 //        final Set<Class<?>> serviceTypes = reflections.getTypesAnnotatedWith(

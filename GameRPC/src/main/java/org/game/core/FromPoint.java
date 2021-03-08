@@ -1,10 +1,12 @@
 package org.game.core;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class FromPoint {
+public class FromPoint implements Serializable {
     private final String node;
     private final String port;
 

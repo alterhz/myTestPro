@@ -1,11 +1,14 @@
 package org.game.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.CodedOutputStream;
+import com.alibaba.com.caucho.hessian.io.Hessian2Input;
+import com.alibaba.com.caucho.hessian.io.Hessian2Output;
 
-public class RpcInvocation {
+public class RpcInvocation implements Serializable {
 
     /** 调用rpc的线程调用点信息 */
     private final FromPoint fromPoint;
@@ -38,6 +41,8 @@ public class RpcInvocation {
         final byte[] buffer = encode();
 
         // TODO code 要通过网络传输的数据
+        final ServiceNode serviceNode = ServicePort.getServiceNode();
+        serviceNode.addRpcInvocation(buffer);
 
         return true;
     }
@@ -48,15 +53,11 @@ public class RpcInvocation {
      * @throws IOException 失败
      */
     public byte[] encode() throws IOException {
-        final byte[] buffer = new byte[1024];
-        final CodedOutputStream out = CodedOutputStream.newInstance(buffer);
-        out.writeStringNoTag(fromPoint.getNode());
-        out.writeStringNoTag(fromPoint.getPort());
-        out.writeStringNoTag(callPoint.getNode());
-        out.writeStringNoTag(callPoint.getPort());
-        out.writeStringNoTag(callPoint.getService());
-
-        return null;
+        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        final Hessian2Output hessian2Output = new Hessian2Output(bout);
+        hessian2Output.writeObject(this);
+        hessian2Output.flush();
+        return bout.toByteArray();
     }
 
     /**
@@ -66,17 +67,16 @@ public class RpcInvocation {
      * @throws IOException 失败
      */
     public static RpcInvocation decode(byte[] buffer) throws IOException {
-        final CodedInputStream codedInputStream = CodedInputStream.newInstance(buffer);
-        final String fromNode = codedInputStream.readString();
-        final String fromPort = codedInputStream.readString();
-        final String callNode = codedInputStream.readString();
-        final String callPort = codedInputStream.readString();
-        final String callService = codedInputStream.readString();
-        final FromPoint fromPoint = new FromPoint(fromNode, fromPort);
-        final CallPoint callPoint = new CallPoint(callNode, callPort, callService);
+        final ByteArrayInputStream bin = new ByteArrayInputStream(buffer);
+        final Hessian2Input hessian2Input = new Hessian2Input(bin);
+        return (RpcInvocation)hessian2Input.readObject();
+    }
 
-        final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, "",
-                new Object[]{});
-        return rpcInvocation;
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public Object[] getMethodArgs() {
+        return methodArgs;
     }
 }
