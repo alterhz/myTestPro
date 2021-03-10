@@ -15,12 +15,10 @@ public class LoginServiceImpl extends ServiceBase implements LoginService {
     @Override public void login() {
         logger.info("LoginServiceImpl.login");
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
-        demoService.go();
+        demoService.go("tom");
     }
 
     @Override public void init() {
         logger.info("LoginServiceImpl.init");
-        final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
-        demoService.test();
     }
 }

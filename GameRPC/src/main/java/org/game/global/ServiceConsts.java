@@ -1,4 +1,4 @@
-package org.game.service;
+package org.game.global;
 
 /**
  * Service相关常量定义

@@ -1,13 +1,12 @@
 package org.game.provider;
 
-import java.util.concurrent.CompletableFuture;
-
+import org.game.core.ServiceBase;
 import org.game.core.refer.ReferenceFactory;
 import org.game.service.DemoService;
-import org.game.core.ServiceBase;
-import org.game.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CompletableFuture;
 
 public class DemoServiceImpl extends ServiceBase implements DemoService {
 
@@ -18,17 +17,18 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
     public void test() {
         logger.info("DemoServiceImpl.test");
 
-        final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
-        loginService.login();
+        final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
+        demoService.getServiceName();
     }
 
     @Override
-    public void go() {
-        logger.info("DemoServiceImpl.go");
+    public void go(String name) {
+        logger.info("DemoServiceImpl.go name = {}", name);
     }
 
     @Override
     public CompletableFuture<String> getServiceName() {
+        logger.info("DemoServiceImpl.getServiceName");
         return CompletableFuture.completedFuture("DemoServiceImpl");
     }
 

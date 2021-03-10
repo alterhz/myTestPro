@@ -1,9 +1,12 @@
 package org.game.core;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -59,6 +62,8 @@ public class ServicePort implements Runnable {
         services.put(name, service);
     }
 
+
+
     public String getName() {
         return name;
     }
@@ -94,7 +99,20 @@ public class ServicePort implements Runnable {
                     logger.warn("service == null.serviceName = {}", serviceName);
                 } else {
                     try {
-                        MethodUtils.invokeExactMethod(service, methodName, rpcInvocation.getMethodArgs());
+                        final Object result = MethodUtils
+                                .invokeExactMethod(service, methodName, rpcInvocation.getMethodArgs());
+                        if (result == null) {
+                            logger.info("void");
+                        } else {
+                            if (result instanceof CompletableFuture) {
+                                // TODO code 返回结果
+                                final CompletableFuture<?> completableFuture = (CompletableFuture<?>) result;
+                                completableFuture.whenComplete((o, throwable) -> {
+
+                                });
+
+                            }
+                        }
                     } catch (NoSuchMethodException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
