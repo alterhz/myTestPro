@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: user
+
+server:
+  port: 6001 #Tomcat端口
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:5001/eureka/
+
+instance:
+  hostname: 127.0.0.1

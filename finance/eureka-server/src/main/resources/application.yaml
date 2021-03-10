@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: eureka-server
+
+server:
+  port: 5001 #Tomcat端口5001
+
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+#    service-url:
+#      defaultZone: http://127.0.0.1:5002/eureka/
+
+instance:
+  hostname: 127.0.0.1
