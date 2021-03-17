@@ -32,7 +32,7 @@ public class StartUp {
     void run(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("启动");
+            logger.info("StartUp");
         }
 
         final ServiceNode serviceNode = new ServiceNode(ServiceConsts.NODE0, Executors.newCachedThreadPool());

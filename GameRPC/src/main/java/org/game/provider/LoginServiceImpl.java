@@ -15,13 +15,13 @@ public class LoginServiceImpl extends ServiceBase implements LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     @Override public CompletableFuture<Integer> login() {
-        logger.info("LoginServiceImpl.login");
+        logger.trace("LoginServiceImpl.login");
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         demoService.go("tom");
         return CompletableFuture.completedFuture(20);
     }
 
     @Override public void init() {
-        logger.info("LoginServiceImpl.init");
+        logger.trace("LoginServiceImpl.init");
     }
 }

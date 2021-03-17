@@ -1,5 +1,6 @@
 package org.game.core;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.game.core.exchange.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,24 +29,32 @@ public class DefaultFuture extends CompletableFuture<Object> {
         this.timeout = System.currentTimeMillis() + timeout;
     }
 
+    /**
+     * 已超时
+     * @return 超时返回 {@code true}
+     */
+    public boolean isTimeout() {
+        return System.currentTimeMillis() > timeout;
+    }
+
     @Override
     public boolean complete(Object value) {
         FUTURES.remove(id);
-        logger.info("DefaultFuture.complete = {}", id);
+        logger.debug("DefaultFuture.complete = {}", id);
         return super.complete(value);
     }
 
     @Override
     public boolean completeExceptionally(Throwable ex) {
         FUTURES.remove(id);
-        logger.info("DefaultFuture.completeExceptionally = {}", id);
+        logger.debug("DefaultFuture.completeExceptionally = {}", id);
         return super.completeExceptionally(ex);
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         FUTURES.remove(id);
-        logger.info("DefaultFuture.cancel = {}", id);
+        logger.debug("DefaultFuture.cancel = {}", id);
         return super.cancel(mayInterruptIfRunning);
     }
 
@@ -53,7 +62,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
         final DefaultFuture future = new DefaultFuture(request, timeout);
         FUTURES.put(future.getId(), future);
         // 在当前Thread添加计时器，处理超时
-
+        ServicePort.getServicePort().addFutureTimeoutTask(future);
         return future;
     }
 
@@ -69,7 +78,11 @@ public class DefaultFuture extends CompletableFuture<Object> {
         return request;
     }
 
-    public long getTimeout() {
-        return timeout;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("timeout", timeout)
+                .toString();
     }
 }

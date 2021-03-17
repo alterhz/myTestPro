@@ -1,5 +1,7 @@
 package org.game.core.exchange;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.Serializable;
 
 public class Response implements Serializable {
@@ -38,5 +40,13 @@ public class Response implements Serializable {
 
     public void setResult(Object result) {
         this.result = result;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("status", status)
+                .toString();
     }
 }

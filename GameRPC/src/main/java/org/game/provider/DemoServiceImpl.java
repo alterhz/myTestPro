@@ -15,29 +15,29 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
 
     @Override
     public void test() {
-        logger.info("DemoServiceImpl.test");
+        logger.trace("DemoServiceImpl.test");
 
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         final CompletableFuture<String> future = demoService.getServiceName();
         future.whenComplete((s, throwable) -> {
             //
-            logger.info("获取Service名称：" + s);
+            logger.trace("获取Service名称：" + s);
         });
     }
 
     @Override
     public void go(String name) {
-        logger.info("DemoServiceImpl.go name = {}", name);
+        logger.trace("DemoServiceImpl.go name = {}", name);
     }
 
     @Override
     public CompletableFuture<String> getServiceName() {
-        logger.info("DemoServiceImpl.getServiceName");
+        logger.trace("DemoServiceImpl.getServiceName");
         return CompletableFuture.completedFuture("DemoServiceImpl");
     }
 
     @Override
     public void init() {
-        logger.info("DemoServiceImpl.init");
+        logger.trace("DemoServiceImpl.init");
     }
 }

@@ -41,7 +41,7 @@ public class ServiceNode {
     public void dispatchResponse(Response response) {
         final DefaultFuture future = DefaultFuture.getFuture(response.getId());
         final RpcInvocation rpcInvocation = future.getRequest().getRpcInvocation();
-        final String portName = rpcInvocation.getCallPoint().getPort();
+        final String portName = rpcInvocation.getFromPoint().getPort();
         final ServicePort servicePort = servicePorts.get(portName);
         servicePort.addResponse(response);
     }

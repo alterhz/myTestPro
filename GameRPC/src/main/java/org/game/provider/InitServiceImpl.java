@@ -17,11 +17,13 @@ public class InitServiceImpl extends ServiceBase implements InitService {
 
     @Override
     public void init() {
+        logger.info("InitServiceImpl.init");
+
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         demoService.test();
 
         final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
         final CompletableFuture<Integer> loginResult = loginService.login();
-        loginResult.whenComplete((value, throwable) -> logger.info("login 返回结果：= {}", value));
+        loginResult.whenComplete((value, throwable) -> logger.trace("login 返回结果：= {}", value));
     }
 }

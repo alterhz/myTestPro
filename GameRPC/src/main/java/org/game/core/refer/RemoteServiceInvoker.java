@@ -45,7 +45,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("type = " + type.getName()
+            logger.debug("type = " + type.getName()
                     + ", methodName = " + methodName
                     + ", args = " + StringUtils.join(args));
         }
@@ -53,7 +53,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         // 服务的远程调用点
         final CallPoint callPoint = getServiceCallPoint();
         // 当前线程的调用点
-        final FromPoint fromPoint = ServicePort.getFromPoint();
+        final FromPoint fromPoint = ServicePort.getServicePort().getFromPoint();
 
         // rpc调用
         final Request request = new Request(Request.allocId());
@@ -68,13 +68,13 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
             // 等待rpc返回
             DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
             // 分发Request
-            final ServiceNode serviceNode = ServicePort.getServiceNode();
+            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
             serviceNode.dispatchRequest(decodeRequest);
 
             return future;
         } else {
             // 分发Request
-            final ServiceNode serviceNode = ServicePort.getServiceNode();
+            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
             serviceNode.dispatchRequest(decodeRequest);
 
             return null;
