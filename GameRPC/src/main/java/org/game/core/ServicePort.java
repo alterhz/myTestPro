@@ -175,15 +175,20 @@ public class ServicePort implements Runnable {
                                 final Response response = new Response(request.getId(), 0);
                                 response.setResult(o);
 
-                                try {
-                                    final byte[] buffer = Utils.encode(response);
-                                    Response decodeResponse = Utils.decode(buffer);
-                                    // 返回应答消息
-                                    final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-                                    serviceNode.dispatchResponse(decodeResponse);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    logger.error("转发Response异常：{}", e.getMessage());
+                                final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
+                                if (request.getRpcInvocation().getFromPoint().getNode().equals(serviceNode)) {
+                                    // 当前node，直接转发
+                                    try {
+                                        final byte[] buffer = Utils.encode(response);
+                                        Response decodeResponse = Utils.decode(buffer);
+                                        // 返回应答消息
+                                        serviceNode.dispatchResponse(decodeResponse);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        logger.error("转发Response异常：{}", e.getMessage());
+                                    }
+                                } else {
+                                    // TODO code 网络发送rpc应答
                                 }
                             });
                         }

@@ -9,6 +9,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.game.core.exchange.Request;
 import org.game.core.exchange.Response;
 import org.game.core.exchange.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceNode {
 
@@ -17,6 +19,9 @@ public class ServiceNode {
     private final Map<String, ServicePort> servicePorts = new ConcurrentHashMap<>();
 
     private final ExecutorService executorService;
+
+    /** logger */
+    private static final Logger logger = LoggerFactory.getLogger(ServiceNode.class);
 
     public ServiceNode(String name, ExecutorService executorService) {
         this.name = name;
@@ -31,6 +36,10 @@ public class ServiceNode {
         final RpcInvocation rpcInvocation = request.getRpcInvocation();
         final String portName = rpcInvocation.getCallPoint().getPort();
         final ServicePort servicePort = servicePorts.get(portName);
+        if (servicePort == null) {
+            logger.error("dispatchRequest. 查找的servicePort不存在。portName = {}", portName);
+            return;
+        }
         servicePort.addRequest(request);
     }
 
@@ -40,9 +49,18 @@ public class ServiceNode {
      */
     public void dispatchResponse(Response response) {
         final DefaultFuture future = DefaultFuture.getFuture(response.getId());
+        if (future == null) {
+            logger.error("dispatchResponse. future == null. response = {}", response);
+            return;
+        }
         final RpcInvocation rpcInvocation = future.getRequest().getRpcInvocation();
+        // 发送RPC调用的ServicePort线程
         final String portName = rpcInvocation.getFromPoint().getPort();
         final ServicePort servicePort = servicePorts.get(portName);
+        if (servicePort == null) {
+            logger.error("dispatchResponse. 查找的servicePort不存在。portName = {}", portName);
+            return;
+        }
         servicePort.addResponse(response);
     }
 

@@ -61,23 +61,25 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, method, args);
         request.setRpcInvocation(rpcInvocation);
 
-        final byte[] requestBuffer = Utils.encode(request);
-        final Request decodeRequest = Utils.decode(requestBuffer);
+        final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
+        if (request.getRpcInvocation().getCallPoint().getNode().equals(serviceNode)) {
+            // 当前node节点，无需网络，直接分发
+            final byte[] requestBuffer = Utils.encode(request);
+            final Request decodeRequest = Utils.decode(requestBuffer);
 
-        if (rpcInvocation.isCompletableFuture()) {
-            // 等待rpc返回
-            DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
-            // 分发Request
-            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-            serviceNode.dispatchRequest(decodeRequest);
-
-            return future;
+            if (rpcInvocation.isCompletableFuture()) {
+                // 等待rpc返回
+                DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
+                // 分发Request
+                serviceNode.dispatchRequest(decodeRequest);
+                return future;
+            } else {
+                // 分发Request
+                serviceNode.dispatchRequest(decodeRequest);
+                return null;
+            }
         } else {
-            // 分发Request
-            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-            serviceNode.dispatchRequest(decodeRequest);
-
-            return null;
+            // TODO code 通过网络发送Request
         }
     }
 
