@@ -22,6 +22,6 @@ public class LoginServiceImpl extends ServiceBase implements LoginService {
     }
 
     @Override public void init() {
-        logger.trace("LoginServiceImpl.init");
+        logger.info("LoginServiceImpl.init");
     }
 }

@@ -62,7 +62,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         request.setRpcInvocation(rpcInvocation);
 
         final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-        if (request.getRpcInvocation().getCallPoint().getNode().equals(serviceNode)) {
+        if (request.getRpcInvocation().getCallPoint().getNode().equals(serviceNode.getName())) {
             // 当前node节点，无需网络，直接分发
             final byte[] requestBuffer = Utils.encode(request);
             final Request decodeRequest = Utils.decode(requestBuffer);

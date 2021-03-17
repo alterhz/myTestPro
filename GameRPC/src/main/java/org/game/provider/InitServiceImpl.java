@@ -24,6 +24,6 @@ public class InitServiceImpl extends ServiceBase implements InitService {
 
         final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
         final CompletableFuture<Integer> loginResult = loginService.login();
-        loginResult.whenComplete((value, throwable) -> logger.trace("login 返回结果：= {}", value));
+        loginResult.whenComplete((value, throwable) -> logger.info("RPC返回结果：login result = {}", value));
     }
 }

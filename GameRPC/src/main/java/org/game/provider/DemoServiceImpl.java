@@ -21,13 +21,13 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
         final CompletableFuture<String> future = demoService.getServiceName();
         future.whenComplete((s, throwable) -> {
             //
-            logger.trace("获取Service名称：" + s);
+            logger.info("RPC返回结果：Service名称 = " + s);
         });
     }
 
     @Override
     public void go(String name) {
-        logger.trace("DemoServiceImpl.go name = {}", name);
+        logger.info("DemoServiceImpl.go name = {}", name);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
 
     @Override
     public void init() {
-        logger.trace("DemoServiceImpl.init");
+        logger.info("DemoServiceImpl.init");
     }
 }

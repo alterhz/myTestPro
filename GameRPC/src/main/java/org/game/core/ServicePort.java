@@ -176,7 +176,7 @@ public class ServicePort implements Runnable {
                                 response.setResult(o);
 
                                 final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-                                if (request.getRpcInvocation().getFromPoint().getNode().equals(serviceNode)) {
+                                if (request.getRpcInvocation().getFromPoint().getNode().equals(serviceNode.getName())) {
                                     // 当前node，直接转发
                                     try {
                                         final byte[] buffer = Utils.encode(response);
