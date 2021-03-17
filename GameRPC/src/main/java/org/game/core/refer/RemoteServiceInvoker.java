@@ -80,6 +80,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
             }
         } else {
             // TODO code 通过网络发送Request
+            return null;
         }
     }
 
