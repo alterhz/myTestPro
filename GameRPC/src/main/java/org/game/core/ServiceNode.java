@@ -1,19 +1,20 @@
 package org.game.core;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.game.core.exchange.Request;
+import org.game.core.exchange.Response;
+import org.game.core.exchange.Utils;
 
 public class ServiceNode {
 
     private final String name;
     /** 服务器线程列表 */
-    private final Map<String, ServicePort> servicePorts = new HashMap<>();
+    private final Map<String, ServicePort> servicePorts = new ConcurrentHashMap<>();
 
     private final ExecutorService executorService;
 
@@ -22,11 +23,27 @@ public class ServiceNode {
         this.executorService = executorService;
     }
 
-    public void addRpcInvocation(byte[] buffer) throws IOException {
-        final RpcInvocation rpcInvocation = RpcInvocation.decode(buffer);
+    /**
+     * 派发{@link Request}到对应的{@link ServicePort}
+     * @param request rpc请求对象
+     */
+    public void dispatchRequest(Request request) {
+        final RpcInvocation rpcInvocation = request.getRpcInvocation();
         final String portName = rpcInvocation.getCallPoint().getPort();
         final ServicePort servicePort = servicePorts.get(portName);
-        servicePort.addRpcInvocation(rpcInvocation);
+        servicePort.addRequest(request);
+    }
+
+    /**
+     * 派发{@link Response}应答对象
+     * @param response 应答对象
+     */
+    public void dispatchResponse(Response response) {
+        final DefaultFuture future = DefaultFuture.getFuture(response.getId());
+        final RpcInvocation rpcInvocation = future.getRequest().getRpcInvocation();
+        final String portName = rpcInvocation.getCallPoint().getPort();
+        final ServicePort servicePort = servicePorts.get(portName);
+        servicePort.addResponse(response);
     }
 
     public void addServicePort(ServicePort servicePort) {

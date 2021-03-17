@@ -10,11 +10,16 @@ import org.game.provider.LoginServiceImpl;
 import org.game.service.DemoService;
 import org.game.service.InitService;
 import org.game.service.LoginService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 
 public class StartUp {
+
+    /** logger */
+    private static final Logger logger = LoggerFactory.getLogger(StartUp.class);
 
     public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         final StartUp startUp = new StartUp();
@@ -25,6 +30,10 @@ public class StartUp {
      * 启动参数 node0 port0
      */
     void run(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("启动");
+        }
 
         final ServiceNode serviceNode = new ServiceNode(ServiceConsts.NODE0, Executors.newCachedThreadPool());
         serviceNode.addServicePort(new ServicePort(ServiceConsts.PORT0, serviceNode));

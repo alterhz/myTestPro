@@ -1,17 +1,19 @@
 package org.game.core;
 
-import java.lang.reflect.Constructor;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.game.core.exchange.Request;
+import org.game.core.exchange.Response;
+import org.game.core.exchange.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServicePort implements Runnable {
 
@@ -28,7 +30,11 @@ public class ServicePort implements Runnable {
     private final Map<String, Service> services = new ConcurrentHashMap<>();
     private final ServiceNode parentNode;
 
-    private final ConcurrentLinkedQueue<RpcInvocation> receivedRpcInvocations = new ConcurrentLinkedQueue<>();
+    /** 收到的{@link Request}线程安全队列  */
+    private final ConcurrentLinkedQueue<Request> receivedRequests = new ConcurrentLinkedQueue<>();
+
+    /** 收到的{@link Response}线程安全队列 */
+    private final ConcurrentLinkedQueue<Response> receivedResponses = new ConcurrentLinkedQueue<>();
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ServicePort.class);
@@ -42,8 +48,12 @@ public class ServicePort implements Runnable {
 
     }
 
-    public void addRpcInvocation(RpcInvocation rpcInvocation) {
-        receivedRpcInvocations.add(rpcInvocation);
+    public void addRequest(Request request) {
+        receivedRequests.add(request);
+    }
+
+    public void addResponse(Response response) {
+        receivedResponses.add(response);
     }
 
     /**
@@ -84,47 +94,82 @@ public class ServicePort implements Runnable {
         }
 
         while (!Thread.currentThread().isInterrupted()) {
-            final RpcInvocation rpcInvocation = receivedRpcInvocations.poll();
-            if (rpcInvocation == null) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                final String serviceName = rpcInvocation.getCallPoint().getService();
-                final String methodName = rpcInvocation.getMethodName();
-                final Service service = services.get(serviceName);
-                if (service == null) {
-                    logger.warn("service == null.serviceName = {}", serviceName);
-                } else {
-                    try {
-                        final Object result = MethodUtils
-                                .invokeExactMethod(service, methodName, rpcInvocation.getMethodArgs());
-                        if (result == null) {
-                            logger.info("void");
-                        } else {
-                            if (result instanceof CompletableFuture) {
-                                // TODO code 返回结果
-                                final CompletableFuture<?> completableFuture = (CompletableFuture<?>) result;
-                                completableFuture.whenComplete((o, throwable) -> {
-
-                                });
-
-                            }
-                        }
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            pollRequest();
+            pollResponse();
         }
 
         THREAD_LOCAL_FROM_POINT.set(null);
         THREAD_LOCAL_SERVICE_NODE.set(null);
+    }
+
+    private void pollResponse() {
+        final Response response = receivedResponses.poll();
+        if (response == null) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            final DefaultFuture future = DefaultFuture.getFuture(response.getId());
+            if (response.getStatus() == 0) {
+                future.complete(response.getResult());
+            } else {
+                future.completeExceptionally(new RuntimeException("出现错误!"));
+            }
+        }
+    }
+
+    private void pollRequest() {
+        final Request request = receivedRequests.poll();
+        if (request == null) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            RpcInvocation rpcInvocation = request.getRpcInvocation();
+            final String serviceName = rpcInvocation.getCallPoint().getService();
+            final String methodName = rpcInvocation.getMethodName();
+            final Service service = services.get(serviceName);
+            if (service == null) {
+                logger.warn("service == null.serviceName = {}", serviceName);
+            } else {
+                try {
+                    final Object result = MethodUtils
+                            .invokeExactMethod(service, methodName, rpcInvocation.getMethodArgs());
+                    if (result == null) {
+                        logger.info("void");
+                    } else {
+                        if (result instanceof CompletableFuture) {
+                            // 返回应答消息
+                            final CompletableFuture<?> completableFuture = (CompletableFuture<?>) result;
+                            completableFuture.whenComplete((o, throwable) -> {
+                                final Response response = new Response(request.getId(), 0);
+                                response.setResult(o);
+
+                                try {
+                                    final byte[] buffer = Utils.encode(response);
+                                    Response decodeResponse = Utils.decode(buffer);
+                                    // 返回应答消息
+                                    final ServiceNode serviceNode = ServicePort.getServiceNode();
+                                    serviceNode.dispatchResponse(decodeResponse);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    logger.error("转发Response异常：{}", e.getMessage());
+                                }
+                            });
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

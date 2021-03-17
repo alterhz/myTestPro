@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import com.alibaba.com.caucho.hessian.io.Hessian2Input;
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
@@ -11,22 +13,32 @@ import com.alibaba.com.caucho.hessian.io.Hessian2Output;
 public class RpcInvocation implements Serializable {
 
     /** 调用rpc的线程调用点信息 */
-    private final FromPoint fromPoint;
+    private FromPoint fromPoint;
     /** 目标调用的rpc调用点信息 */
-    private final CallPoint callPoint;
+    private CallPoint callPoint;
 
     /** rpc调用的方法 */
-    private final String methodName;
+    private String methodName;
     /** rpc调用参数列表 */
-    private final Object[] methodArgs;
+    private Object[] methodArgs;
 
-    //transient
+    /** rpc方法 */
+    private transient Method method;
+    /** 返回值类型 */
+    private transient Class<?> returnType;
 
-    public RpcInvocation(FromPoint fromPoint, CallPoint callPoint, String methodName, Object[] methodArgs) {
+    public RpcInvocation() {
+
+    }
+
+    public RpcInvocation(FromPoint fromPoint, CallPoint callPoint, Method method, Object[] methodArgs) {
         this.fromPoint = fromPoint;
         this.callPoint = callPoint;
-        this.methodName = methodName;
+        this.methodName = method.getName();
         this.methodArgs = methodArgs;
+        // transient
+        this.method = method;
+        this.returnType = method.getReturnType();
     }
 
     public FromPoint getFromPoint() {
@@ -35,16 +47,6 @@ public class RpcInvocation implements Serializable {
 
     public CallPoint getCallPoint() {
         return callPoint;
-    }
-
-    public boolean invoke() throws IOException {
-        final byte[] buffer = encode();
-
-        // TODO code 要通过网络传输的数据
-        final ServiceNode serviceNode = ServicePort.getServiceNode();
-        serviceNode.addRpcInvocation(buffer);
-
-        return true;
     }
 
     /**
@@ -78,5 +80,15 @@ public class RpcInvocation implements Serializable {
 
     public Object[] getMethodArgs() {
         return methodArgs;
+    }
+
+    public boolean isOneWay() {
+        // 这里有点问题，rpc接收端会有问题
+        return returnType != null ? returnType.equals(Void.class) : true;
+    }
+
+    public boolean isCompletableFuture() {
+        // 这里有点问题，rpc接收端会有问题
+        return returnType != null ? returnType.equals(CompletableFuture.class) : true;
     }
 }

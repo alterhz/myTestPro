@@ -7,11 +7,9 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.game.core.CallPoint;
-import org.game.core.FromPoint;
-import org.game.core.RpcInvocation;
-import org.game.core.ServiceConfig;
-import org.game.core.ServicePort;
+import org.game.core.*;
+import org.game.core.exchange.Request;
+import org.game.core.exchange.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +56,29 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         final FromPoint fromPoint = ServicePort.getFromPoint();
 
         // rpc调用
-        final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, methodName, args);
-        rpcInvocation.invoke();
+        final Request request = new Request(Request.allocId());
 
-        return null;
+        final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, method, args);
+        request.setRpcInvocation(rpcInvocation);
+
+        final byte[] requestBuffer = Utils.encode(request);
+        final Request decodeRequest = Utils.decode(requestBuffer);
+
+        if (rpcInvocation.isCompletableFuture()) {
+            // 等待rpc返回
+            DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
+            // 分发Request
+            final ServiceNode serviceNode = ServicePort.getServiceNode();
+            serviceNode.dispatchRequest(decodeRequest);
+
+            return future;
+        } else {
+            // 分发Request
+            final ServiceNode serviceNode = ServicePort.getServiceNode();
+            serviceNode.dispatchRequest(decodeRequest);
+
+            return null;
+        }
     }
 
     /**
