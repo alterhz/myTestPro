@@ -21,6 +21,7 @@ public class Request implements Serializable {
     private RpcInvocation rpcInvocation;
 
     public Request() {
+        this.id = 0L;
     }
 
     public Request(long id) {
