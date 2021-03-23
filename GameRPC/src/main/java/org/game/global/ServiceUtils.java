@@ -3,11 +3,17 @@ package org.game.global;
 import org.game.core.ServiceBase;
 import org.game.core.ServiceConfig;
 import org.game.core.ServiceNode;
+import org.game.core.ServicePort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class ServiceUtils {
+
+    /** logger */
+    private static final Logger logger = LoggerFactory.getLogger(ServiceUtils.class);
 
     /**
      * 通过服务接口类添加服务到对应node上的port上
@@ -28,7 +34,13 @@ public class ServiceUtils {
         final Class<? extends ServiceBase> serviceImplType = serviceConfig.serviceImplType();
         final Constructor<? extends ServiceBase> constructor = serviceImplType.getConstructor();
         final ServiceBase serviceBase = constructor.newInstance();
-        serviceNode.getServicePort(serviceConfig.port()).addService(serviceName, serviceBase);
+        final String portName = serviceConfig.port();
+        final ServicePort servicePort = serviceNode.getServicePort(portName);
+        if (servicePort == null) {
+            serviceNode.addServicePort(new ServicePort(portName, serviceNode));
+            logger.info("addServicePort portName = {}", portName);
+        }
+        serviceNode.getServicePort(portName).addService(serviceName, serviceBase);
     }
 
 }

@@ -1,6 +1,6 @@
 package org.game.core.transport;
 
-public class Consts {
+public class TransportConsts {
 
     /** 单个消息包最大长度 */
     public static final int MAX_FRAME_LENGTH = 64 * 1024;

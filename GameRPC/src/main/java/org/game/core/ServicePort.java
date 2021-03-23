@@ -5,6 +5,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.game.core.exchange.Request;
 import org.game.core.exchange.Response;
 import org.game.core.exchange.Utils;
+import org.game.global.ServiceConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,19 +177,14 @@ public class ServicePort implements Runnable {
                                 response.setResult(o);
 
                                 final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-                                if (request.getRpcInvocation().getFromPoint().getNode().equals(serviceNode.getName())) {
+                                final String replyNode = request.getRpcInvocation().getFromPoint().getNode();
+                                if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && replyNode.equals(serviceNode.getName())) {
                                     // 当前node，直接转发
-                                    try {
-                                        final byte[] buffer = Utils.encode(response);
-                                        Response decodeResponse = Utils.decode(buffer);
-                                        // 返回应答消息
-                                        serviceNode.dispatchResponse(decodeResponse);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        logger.error("转发Response异常：{}", e.getMessage());
-                                    }
+                                    // 返回应答消息
+                                    serviceNode.dispatchResponse(response);
                                 } else {
                                     // TODO code 网络发送rpc应答
+                                    serviceNode.getNode(replyNode).send(response);
                                 }
                             });
                         }

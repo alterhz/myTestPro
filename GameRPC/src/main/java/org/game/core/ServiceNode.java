@@ -1,16 +1,19 @@
 package org.game.core;
 
-import java.io.IOException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.game.core.exchange.Request;
+import org.game.core.exchange.Response;
+import org.game.core.transport.node.NodeClient;
+import org.game.core.transport.node.NodeServer;
+import org.game.global.ServiceConsts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.game.core.exchange.Request;
-import org.game.core.exchange.Response;
-import org.game.core.exchange.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServiceNode {
 
@@ -18,6 +21,16 @@ public class ServiceNode {
     /** 服务器线程列表 */
     private final Map<String, ServicePort> servicePorts = new ConcurrentHashMap<>();
 
+    /** 远端的 {@link ServiceNode} */
+    private final Map<String, NodeClient> nodeClients = new ConcurrentHashMap<>();
+
+    /** 空的node连接对象 */
+    private static final NodeClient.EmptyNodeClient EMPTY_NODE_CLIENT = new NodeClient.EmptyNodeClient("empty");
+
+    /** 服务端节点 */
+    private final NodeServer nodeServer = new NodeServer(this);
+
+    /** {@link ServicePort} 执行线程池 */
     private final ExecutorService executorService;
 
     /** logger */
@@ -26,6 +39,52 @@ public class ServiceNode {
     public ServiceNode(String name, ExecutorService executorService) {
         this.name = name;
         this.executorService = executorService;
+    }
+
+    public void shutdown() {
+        nodeServer.shutdown();
+        final Iterator<NodeClient> iterator = nodeClients.values().iterator();
+        while (iterator.hasNext()) {
+            final NodeClient nodeClient = iterator.next();
+            nodeClient.shutdown();
+        }
+    }
+
+    public void init() {
+        final Pair<String, Integer> nodeConfig = ServiceConsts.NODE_CONFIGS.get(name);
+        if (nodeConfig == null) {
+            logger.error("node 启动失败，未获取到启动端口。name = {}", name);
+            return;
+        }
+
+        nodeServer.start(nodeConfig.getRight());
+
+        ServiceConsts.NODE_CONFIGS.forEach((node, ipPort) -> {
+            // TODO code 连接所有服务端node（包括当前node，自己的node）
+            connectNode(node, ipPort.getLeft(), ipPort.getRight());
+        });
+    }
+
+    /**
+     * 获取Node通信对象
+     * @param node 名称
+     * @return node的通信对象
+     */
+    public NodeClient getNode(String node) {
+        return nodeClients.getOrDefault(node, EMPTY_NODE_CLIENT);
+    }
+
+    /**
+     * 连接服务端node
+     * @param node 名称
+     * @param ip 服务端ip
+     * @param port 服务端port
+     */
+    private void connectNode(String node, String ip, int port) {
+        final NodeClient nodeClient = new NodeClient(node);
+        nodeClient.connect(ip, port);
+
+        nodeClients.put(node, nodeClient);
     }
 
     /**
@@ -82,7 +141,9 @@ public class ServiceNode {
     }
 
     public void startAllService() {
-        for (ServicePort servicePort : servicePorts.values()) {
+        final Iterator<ServicePort> iterator = servicePorts.values().iterator();
+        while (iterator.hasNext()) {
+            final ServicePort servicePort = iterator.next();
             executorService.execute(servicePort);
         }
     }

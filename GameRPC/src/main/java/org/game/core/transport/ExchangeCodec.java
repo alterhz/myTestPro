@@ -1,6 +1,5 @@
 package org.game.core.transport;
 
-import com.alibaba.com.caucho.hessian.io.Hessian2Output;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
@@ -10,7 +9,6 @@ import org.game.core.exchange.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class ExchangeCodec extends ByteToMessageCodec {
             final String str = (String) msg;
 
             final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
 
             int length = 0;
             final byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
@@ -38,14 +36,14 @@ public class ExchangeCodec extends ByteToMessageCodec {
 
             // 写入消息包头
             out.writerIndex(headIndex);
-            out.writeInt(Consts.HEAD_LENGTH + length - Consts.HEAD_LENGTH_FIELD_LENGTH);
+            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
             out.writeByte(FLAG_STRING);
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH + length);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         } else if (msg instanceof Request) {
             final Request request = (Request) msg;
 
             final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
 
             int length = 0;
             final byte[] encode = Utils.encode(request);
@@ -54,14 +52,14 @@ public class ExchangeCodec extends ByteToMessageCodec {
 
             // 写入消息包头
             out.writerIndex(headIndex);
-            out.writeInt(Consts.HEAD_LENGTH + length - Consts.HEAD_LENGTH_FIELD_LENGTH);
+            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
             out.writeByte(FLAG_REQUEST);
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH + length);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         } else if (msg instanceof Response) {
             final Response response = (Response) msg;
 
             final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
 
             int length = 0;
             final byte[] encode = Utils.encode(response);
@@ -70,9 +68,9 @@ public class ExchangeCodec extends ByteToMessageCodec {
 
             // 写入消息包头
             out.writerIndex(headIndex);
-            out.writeInt(Consts.HEAD_LENGTH + length - Consts.HEAD_LENGTH_FIELD_LENGTH);
+            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
             out.writeByte(FLAG_RESPONSE);
-            out.writerIndex(headIndex + Consts.HEAD_LENGTH + length);
+            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         }
     }
 
@@ -87,7 +85,7 @@ public class ExchangeCodec extends ByteToMessageCodec {
             out.add(str);
             logger.trace("接收到消息包长度。fieldLength = {}, in.length = {}, str = {}", fieldLength, in.readableBytes(), str);
         } else if (flag == FLAG_REQUEST) {
-            int length = fieldLength - Consts.HEAD_FLAG_LENGTH;
+            int length = fieldLength - TransportConsts.HEAD_FLAG_LENGTH;
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
 
@@ -96,7 +94,7 @@ public class ExchangeCodec extends ByteToMessageCodec {
             out.add(request);
             logger.trace("接收到消息包长度。fieldLength = {}, in.length = {}, request.id = {}", fieldLength, in.readableBytes(), request.getId());
         } else if (flag == FLAG_RESPONSE) {
-            int length = fieldLength - Consts.HEAD_FLAG_LENGTH;
+            int length = fieldLength - TransportConsts.HEAD_FLAG_LENGTH;
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
 

@@ -1,4 +1,4 @@
-package org.game.core.transport;
+package org.game.core.transport.node;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -10,20 +10,27 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.game.core.ServiceNode;
+import org.game.core.transport.ExchangeCodec;
+import org.game.core.transport.ServerHandler;
+import org.game.core.transport.TransportConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-public class RpcServer {
+public class NodeServer {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(NodeServer.class);
 
-    public void start() {
-        final ServerBootstrap serverBootstrap = new ServerBootstrap();
-        final ServerBootstrap bootstrap = serverBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
+    private final NioEventLoopGroup group = new NioEventLoopGroup();
+    /** 服务端启动器 */
+    private final ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+    public NodeServer(ServiceNode serviceNode) {
+        serverBootstrap.group(group)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
@@ -32,20 +39,33 @@ public class RpcServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new LengthFieldBasedFrameDecoder(Consts.MAX_FRAME_LENGTH, 0, Consts.HEAD_LENGTH_FIELD_LENGTH))
+                                .addLast(new LengthFieldBasedFrameDecoder(TransportConsts.MAX_FRAME_LENGTH, 0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
                                 .addLast("hessianCodec", new ExchangeCodec())
                                 .addLast("server-idle-handler", new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
-                                .addLast("handler", new ServerHandler());
+                                .addLast("handler", new ServerHandler(serviceNode));
                     }
                 });
-        final ChannelFuture future = bootstrap.bind(new InetSocketAddress(8088));
+    }
+
+    public void shutdown() {
+        group.shutdownGracefully();
+    }
+
+    /**
+     * 启动node服务端监听
+     * @param port 启动端口
+     * @return future对象
+     */
+    public ChannelFuture start(int port) {
+        final ChannelFuture future = serverBootstrap.bind(new InetSocketAddress(port));
         future.addListener(f -> {
             if (f.isSuccess()) {
-                logger.info("Server bind.");
+                logger.info("Server bind." + serverBootstrap.config().localAddress());
             } else {
                 logger.error("bind attempt failed.");
             }
         });
+        return future;
     }
 
 }

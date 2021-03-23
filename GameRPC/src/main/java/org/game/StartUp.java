@@ -10,6 +10,7 @@ import org.game.provider.LoginServiceImpl;
 import org.game.service.DemoService;
 import org.game.service.InitService;
 import org.game.service.LoginService;
+import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class StartUp {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(StartUp.class);
 
-    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static void main(String[] args) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, InterruptedException {
         final StartUp startUp = new StartUp();
         startUp.run(args);
     }
@@ -29,39 +30,27 @@ public class StartUp {
     /**
      * 启动参数 node0 port0
      */
-    void run(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-
+    void run(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, InterruptedException {
         if (logger.isTraceEnabled()) {
             logger.info("StartUp");
         }
 
         final ServiceNode serviceNode = new ServiceNode(ServiceConsts.NODE0, Executors.newCachedThreadPool());
-        serviceNode.addServicePort(new ServicePort(ServiceConsts.PORT0, serviceNode));
-        serviceNode.addServicePort(new ServicePort(ServiceConsts.PORT1, serviceNode));
-        serviceNode.addServicePort(new ServicePort(ServiceConsts.PORT2, serviceNode));
+        serviceNode.init();
 
-        if (true) {
-            ServiceUtils.addService(serviceNode, InitService.class);
-            ServiceUtils.addService(serviceNode, DemoService.class);
-            ServiceUtils.addService(serviceNode, LoginService.class);
-        } else {
-            serviceNode.getServicePort(ServiceConsts.PORT0).addService(InitService.class.getName(),
-                                                           new InitServiceImpl());
-            serviceNode.getServicePort(ServiceConsts.PORT1).addService(DemoService.class.getName(),
-                                                           new DemoServiceImpl());
-            serviceNode.getServicePort(ServiceConsts.PORT2).addService(LoginService.class.getName(),
-                                                           new LoginServiceImpl());
-        }
+        // 等待1秒建立连接
+        Thread.sleep(1000);
+
+        ServiceUtils.addService(serviceNode, InitService.class);
+        ServiceUtils.addService(serviceNode, DemoService.class);
+        ServiceUtils.addService(serviceNode, LoginService.class);
 
         serviceNode.startAllService();
 
-
-//        final Reflections reflections = new Reflections("org.game.service");
-//        final Set<Class<?>> serviceTypes = reflections.getTypesAnnotatedWith(
-//                ServiceConfig.class);
-//        for (Class<?> serviceType : serviceTypes) {
-//            System.out.println("serviceType = " + serviceType.getName());
-//        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            // 关闭
+            serviceNode.shutdown();
+        }));
 
     }
 }

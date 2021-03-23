@@ -3,6 +3,7 @@ package org.game.core.transport;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import org.game.core.ServiceNode;
 import org.game.core.exchange.Request;
 import org.game.core.exchange.Response;
 import org.slf4j.Logger;
@@ -28,20 +29,6 @@ public class ClientHandler extends ChannelDuplexHandler {
         if (logger.isTraceEnabled()) {
             logger.trace("ClientHandler.channelActive channel = {}", ctx.channel());
         }
-
-        ctx.channel().writeAndFlush("jack");
-
-        for (int i = 0; i < 3; i++) {
-            final Request request = new Request(Request.allocId());
-            ctx.channel().writeAndFlush(request);
-        }
-
-        for (int i = 0; i < 3; i++) {
-            final Response request = new Response(i+10L, 20);
-            ctx.channel().writeAndFlush(request);
-        }
-
-        ctx.channel().writeAndFlush("end");
     }
 
     @Override
@@ -55,11 +42,11 @@ public class ClientHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        super.channelRead(ctx, msg);
-
         if (logger.isTraceEnabled()) {
             logger.trace("ClientHandler.channelRead");
         }
+
+        super.channelRead(ctx, msg);
     }
 
     @Override

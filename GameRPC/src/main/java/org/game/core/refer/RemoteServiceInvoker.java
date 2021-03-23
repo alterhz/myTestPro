@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.game.core.*;
 import org.game.core.exchange.Request;
 import org.game.core.exchange.Utils;
+import org.game.core.transport.node.NodeClient;
+import org.game.global.ServiceConsts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.debug("type = " + type.getName()
+            logger.debug("rpc invoke type = " + type.getName()
                     + ", methodName = " + methodName
                     + ", args = " + StringUtils.join(args));
         }
@@ -62,25 +64,33 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         request.setRpcInvocation(rpcInvocation);
 
         final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-        if (request.getRpcInvocation().getCallPoint().getNode().equals(serviceNode.getName())) {
+        if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && callPoint.getNode().equals(serviceNode.getName())) {
             // 当前node节点，无需网络，直接分发
-            final byte[] requestBuffer = Utils.encode(request);
-            final Request decodeRequest = Utils.decode(requestBuffer);
-
             if (rpcInvocation.isCompletableFuture()) {
                 // 等待rpc返回
                 DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
                 // 分发Request
-                serviceNode.dispatchRequest(decodeRequest);
+                serviceNode.dispatchRequest(request);
                 return future;
             } else {
                 // 分发Request
-                serviceNode.dispatchRequest(decodeRequest);
+                serviceNode.dispatchRequest(request);
                 return null;
             }
         } else {
             // TODO code 通过网络发送Request
-            return null;
+            if (rpcInvocation.isCompletableFuture()) {
+                // 等待rpc返回
+                DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
+                final NodeClient node = serviceNode.getNode(callPoint.getNode());
+                node.send(request);
+                return future;
+            } else {
+                // 分发Request
+                final NodeClient node = serviceNode.getNode(callPoint.getNode());
+                node.send(request);
+                return null;
+            }
         }
     }
 

@@ -3,12 +3,21 @@ package org.game.core.transport;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import org.game.core.ServiceNode;
+import org.game.core.exchange.Request;
+import org.game.core.exchange.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServerHandler extends ChannelDuplexHandler {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+
+    private final ServiceNode serviceNode;
+
+    public ServerHandler(ServiceNode serviceNode) {
+        this.serviceNode = serviceNode;
+    }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -42,6 +51,18 @@ public class ServerHandler extends ChannelDuplexHandler {
         if (logger.isTraceEnabled()) {
             logger.trace("ServerHandler.channelRead");
             logger.trace("msg type = {}, msg = {}", msg.getClass().getName(), msg);
+        }
+
+        if (serviceNode != null) {
+            if (msg instanceof Request) {
+                final Request request = (Request) msg;
+                logger.trace("org.game.core.transport.ServerHandler.channelRead Request");
+                serviceNode.dispatchRequest(request);
+            } else if (msg instanceof Response) {
+                final Response response = (Response) msg;
+                logger.trace("org.game.core.transport.ServerHandler.channelRead Response");
+                serviceNode.dispatchResponse(response);
+            }
         }
 
         super.channelRead(ctx, msg);
