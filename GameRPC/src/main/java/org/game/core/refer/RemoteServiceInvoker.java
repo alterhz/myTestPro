@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +30,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException, IOException {
+    public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException, IOException, ExecutionException, InterruptedException {
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(this, args);
         }
@@ -66,16 +68,28 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
         if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && callPoint.getNode().equals(serviceNode.getName())) {
             // 当前node节点，无需网络，直接分发
-            if (rpcInvocation.isCompletableFuture()) {
+            if (rpcInvocation.isOneWay()) {
+                // 分发Request
+                serviceNode.dispatchRequest(request);
+                return null;
+            } else {
                 // 等待rpc返回
                 DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
                 // 分发Request
                 serviceNode.dispatchRequest(request);
-                return future;
-            } else {
-                // 分发Request
-                serviceNode.dispatchRequest(request);
-                return null;
+                if (rpcInvocation.isCompletableFuture()) {
+                    return future;
+                }
+
+                final long t1 = System.currentTimeMillis();
+                while (!future.isDone()) {
+                    ServicePort.getServicePort().pulse();
+                    if (System.currentTimeMillis() - t1 > 10 * 1000) {
+                        return new TimeoutException("RPC阻塞调用超时。");
+                    }
+                }
+
+                return future.get();
             }
         } else {
             // TODO code 通过网络发送Request

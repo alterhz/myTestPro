@@ -37,7 +37,7 @@ public class ServiceConsts {
     public static final String PORT2 = "port2";
 
     /** rpc总是使用网络传输方式 */
-    public static final boolean RPC_ALWAYS_USE_TRANSPORT = true;
+    public static final boolean RPC_ALWAYS_USE_TRANSPORT = false;
 
     private ServiceConsts() {
         throw new AssertionError();

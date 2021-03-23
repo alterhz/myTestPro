@@ -11,4 +11,6 @@ import java.util.concurrent.CompletableFuture;
         serviceImplType = LoginServiceImpl.class)
 public interface LoginService {
     CompletableFuture<Integer> login();
+
+    Integer allocLoginId();
 }

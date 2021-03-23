@@ -105,13 +105,17 @@ public class ServicePort implements Runnable {
         }
 
         while (!Thread.currentThread().isInterrupted()) {
-            pollRequest();
-            pollResponse();
-
-            futureTimeout();
+            pulse();
         }
 
         THREAD_LOCAL_SERVICE_PORT.set(null);
+    }
+
+    public void pulse() {
+        pollRequest();
+        pollResponse();
+
+        futureTimeout();
     }
 
     private void futureTimeout() {
@@ -187,6 +191,21 @@ public class ServicePort implements Runnable {
                                     serviceNode.getNode(replyNode).send(response);
                                 }
                             });
+                        } else {
+                            // Integer,Long,String等数据类型直接返回
+                            final Response response = new Response(request.getId(), 0);
+                            response.setResult(result);
+
+                            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
+                            final String replyNode = request.getRpcInvocation().getFromPoint().getNode();
+                            if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && replyNode.equals(serviceNode.getName())) {
+                                // 当前node，直接转发
+                                // 返回应答消息
+                                serviceNode.dispatchResponse(response);
+                            } else {
+                                // TODO code 网络发送rpc应答
+                                serviceNode.getNode(replyNode).send(response);
+                            }
                         }
                     }
                 } catch (NoSuchMethodException e) {

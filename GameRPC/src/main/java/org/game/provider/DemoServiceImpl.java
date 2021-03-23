@@ -17,6 +17,7 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
     public void test() {
         logger.trace("DemoServiceImpl.test");
 
+        logger.info("demoService.getServiceName()");
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         final CompletableFuture<String> future = demoService.getServiceName();
         future.whenComplete((s, throwable) -> {
@@ -38,6 +39,6 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
 
     @Override
     public void init() {
-        logger.info("DemoServiceImpl.init");
+        logger.trace("DemoServiceImpl.init");
     }
 }

@@ -82,13 +82,17 @@ public class RpcInvocation implements Serializable {
         return methodArgs;
     }
 
+    /**
+     * 单向的rpc，返回值为 {@code void} 或者 {@link Void}
+     * @return 无返回值（单向的）返回 {@code true}
+     */
     public boolean isOneWay() {
         // 这里有点问题，rpc接收端会有问题
-        return returnType != null ? returnType.equals(Void.class) : true;
+        return returnType != null ? (void.class.equals(returnType) || Void.class.equals(returnType)) : false;
     }
 
     public boolean isCompletableFuture() {
         // 这里有点问题，rpc接收端会有问题
-        return returnType != null ? returnType.equals(CompletableFuture.class) : true;
+        return returnType != null ? returnType.equals(CompletableFuture.class) : false;
     }
 }

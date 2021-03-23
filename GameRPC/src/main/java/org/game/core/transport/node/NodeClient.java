@@ -82,7 +82,7 @@ public class NodeClient {
         if (channel.isActive()) {
             channel.writeAndFlush(obj);
         } else {
-            logger.warn("node连接断开。name = {}", name);
+            logger.error("org.game.core.transport.node.NodeClient.send时，node连接断开。name = {}", name);
         }
     }
 
@@ -97,17 +97,17 @@ public class NodeClient {
 
         @Override
         public void shutdown() {
-            logger.trace("使用EmptyNodeClient对象shutdown");
+            logger.error("使用EmptyNodeClient对象shutdown");
         }
 
         @Override
         public void connect(String ip, int port) {
-            logger.trace("使用EmptyNodeClient对象连接node");
+            logger.error("使用EmptyNodeClient对象连接node");
         }
 
         @Override
         public void send(Object obj) {
-            logger.trace("使用EmptyNodeClient对象发送数据");
+            logger.error("使用EmptyNodeClient对象发送数据");
         }
     }
 }

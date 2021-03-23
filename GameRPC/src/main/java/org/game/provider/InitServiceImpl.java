@@ -17,13 +17,21 @@ public class InitServiceImpl extends ServiceBase implements InitService {
 
     @Override
     public void init() {
-        logger.info("InitServiceImpl.init");
+        logger.trace("InitServiceImpl.init");
 
+        logger.info("demoService.test()");
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         demoService.test();
 
+        logger.info("loginService.login()");
         final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
         final CompletableFuture<Integer> loginResult = loginService.login();
         loginResult.whenComplete((value, throwable) -> logger.info("RPC返回结果：login result = {}", value));
+
+        logger.info("阻塞调用loginService.login()");
+        final long t1 = System.currentTimeMillis();
+        final Integer loginId = loginService.allocLoginId();
+        final long t2 = System.currentTimeMillis();
+        logger.info("阻塞调用返回。耗时 = {}毫秒, loginId = {}", (t2 - t1), loginId);
     }
 }

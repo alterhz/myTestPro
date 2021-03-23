@@ -41,6 +41,13 @@ public class ServiceNode {
         this.executorService = executorService;
     }
 
+    /**
+     * TODO code {@link NodeClient} 断线重连
+     */
+    public void pulse() {
+
+    }
+
     public void shutdown() {
         nodeServer.shutdown();
         final Iterator<NodeClient> iterator = nodeClients.values().iterator();
