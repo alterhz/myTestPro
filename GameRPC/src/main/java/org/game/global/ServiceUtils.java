@@ -1,9 +1,6 @@
 package org.game.global;
 
-import org.game.core.ServiceBase;
-import org.game.core.ServiceConfig;
-import org.game.core.ServiceNode;
-import org.game.core.ServicePort;
+import org.game.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +28,16 @@ public class ServiceUtils {
             throw new IllegalStateException("当前服务不在当前node启动。serviceName = " + serviceName + ", node = " + serviceConfig
                     .node() + ", current Node = " + serviceNode.getName());
         }
-        final Class<? extends ServiceBase> serviceImplType = serviceConfig.serviceImplType();
-        final Constructor<? extends ServiceBase> constructor = serviceImplType.getConstructor();
-        final ServiceBase serviceBase = constructor.newInstance();
+        final Class<? extends Service> serviceImplType = serviceConfig.serviceImplType();
+        final Constructor<? extends Service> constructor = serviceImplType.getConstructor();
+        final Service service = constructor.newInstance();
         final String portName = serviceConfig.port();
         final ServicePort servicePort = serviceNode.getServicePort(portName);
         if (servicePort == null) {
             serviceNode.addServicePort(new ServicePort(portName, serviceNode));
             logger.info("ServicePort added. port = {}", portName);
         }
-        serviceNode.getServicePort(portName).addService(serviceName, serviceBase);
+        serviceNode.getServicePort(portName).addService(serviceName, service);
     }
 
 }

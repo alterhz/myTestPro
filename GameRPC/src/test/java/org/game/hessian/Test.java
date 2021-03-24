@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.com.caucho.hessian.io.Hessian2Input;
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
@@ -30,5 +31,11 @@ public class Test {
         final Hessian2Input hessian2Input = new Hessian2Input(bin);
         final Student student1 = (Student)hessian2Input.readObject();
         System.out.println("student1 = " + student1);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testTimeUnit() {
+        final long l = TimeUnit.SECONDS.toMillis(2);
+        System.out.println("l = " + l);
     }
 }

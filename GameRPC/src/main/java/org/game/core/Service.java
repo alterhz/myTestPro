@@ -8,4 +8,6 @@ package org.game.core;
  */
 public interface Service {
     void init();
+
+    void pulse(long now);
 }

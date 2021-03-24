@@ -152,7 +152,6 @@ public class ServiceNode {
         if (servicePorts.containsKey(servicePort.getName())) {
             return;
         }
-        servicePort.init();
         servicePorts.put(servicePort.getName(), servicePort);
     }
 

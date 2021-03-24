@@ -81,7 +81,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
 
             final long t1 = System.currentTimeMillis();
             while (!future.isDone()) {
-                ServicePort.getServicePort().pulse();
+                ServicePort.getServicePort().pulseOne();
                 if (System.currentTimeMillis() - t1 > 10 * 1000) {
                     return new TimeoutException("RPC阻塞调用超时。");
                 }

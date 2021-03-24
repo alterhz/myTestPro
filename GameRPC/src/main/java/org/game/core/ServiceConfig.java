@@ -25,5 +25,5 @@ public @interface ServiceConfig {
     /**
      * 服务实例类，用来创建服务器的启动实例
      */
-    Class<? extends ServiceBase> serviceImplType();
+    Class<? extends Service> serviceImplType();
 }
