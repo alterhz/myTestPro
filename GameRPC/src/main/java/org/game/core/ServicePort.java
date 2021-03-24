@@ -80,6 +80,7 @@ public class ServicePort implements Runnable {
 
     public void addService(String name, Service service) {
         services.put(name, service);
+        logger.info("Service added. name = {}", name);
     }
 
     public ServiceNode getServiceNode() {

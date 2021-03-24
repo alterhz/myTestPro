@@ -29,7 +29,10 @@ public class NodeServer {
     /** 服务端启动器 */
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
+    private final ServiceNode serviceNode;
+
     public NodeServer(ServiceNode serviceNode) {
+        this.serviceNode = serviceNode;
         serverBootstrap.group(group)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
@@ -60,9 +63,9 @@ public class NodeServer {
         final ChannelFuture future = serverBootstrap.bind(new InetSocketAddress(port));
         future.addListener(f -> {
             if (f.isSuccess()) {
-                logger.info("Server bind." + serverBootstrap.config().localAddress());
+                logger.info("Server bind. node = {}, port = {}", serviceNode.getName(), port);
             } else {
-                logger.error("bind attempt failed.");
+                logger.error("bind attempt failed. node = {}, port = {}", serviceNode.getName(), port);
             }
         });
         return future;

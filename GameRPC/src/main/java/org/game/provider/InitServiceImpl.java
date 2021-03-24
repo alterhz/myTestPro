@@ -30,7 +30,6 @@ public class InitServiceImpl extends ServiceBase implements InitService {
             logger.info("2. RPC返回结果：Service名称 = " + s);
         });
 
-
         logger.info("3. RPC阻塞调用demoService.getId()");
         final Integer id = demoService.getId();
         logger.info("3. RPC阻塞调用返回。id = {}", id);

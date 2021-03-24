@@ -52,6 +52,21 @@ public class NodeClient {
                 });
     }
 
+    /**
+     * channel的连接状态
+     * @return 未连接或者断开连接返回 {@code false}
+     */
+    public boolean isActive() {
+        return channelFuture != null ? channelFuture.channel().isActive() : false;
+    }
+
+    /**
+     * 连接是否打开
+     */
+    public boolean isOpen() {
+        return channelFuture != null ? channelFuture.channel().isOpen() : false;
+    }
+
     public void shutdown() {
         group.shutdownGracefully();
     }
@@ -63,12 +78,15 @@ public class NodeClient {
      * @return future对象
      */
     public void connect(String ip, int port) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("尝试连接服务端node。name = {}, ip = {}, port = {}", name, ip, port);
+        }
         channelFuture = bootstrap.clone().connect(new InetSocketAddress(ip, port));
         channelFuture.addListener(f -> {
             if (f.isSuccess()) {
-                logger.info("Connection established." + bootstrap.config().remoteAddress());
+                logger.debug("Connection established.name = {}, ip = {}, port = {}", name, ip, port);
             } else {
-                logger.error("Connection attempt failed.");
+                logger.error("Connection attempt failed.name = {}, ip = {}, port = {}", name, ip, port);
             }
         });
     }
@@ -85,6 +103,8 @@ public class NodeClient {
             logger.error("org.game.core.transport.node.NodeClient.send时，node连接断开。name = {}", name);
         }
     }
+
+
 
     /**
      * 空的node对象

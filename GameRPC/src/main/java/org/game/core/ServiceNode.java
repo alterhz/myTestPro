@@ -42,10 +42,21 @@ public class ServiceNode {
     }
 
     /**
-     * TODO code {@link NodeClient} 断线重连
+     * TODO code {@link NodeClient} 断线重连检测
      */
-    public void pulse() {
+    public void checkChannelActive() {
+        ServiceConsts.NODE_CONFIGS.forEach((node, ipPort) -> {
+            boolean isConnected = isConnected(node);
+            if (!isConnected) {
+                // 连接已经断开
+                connectNode(node, ipPort.getLeft(), ipPort.getRight());
+            }
+        });
+    }
 
+    private boolean isConnected(String node) {
+        final NodeClient nodeClient = nodeClients.get(node);
+        return nodeClient != null ? nodeClient.isActive() : false;
     }
 
     public void shutdown() {
@@ -66,9 +77,17 @@ public class ServiceNode {
 
         nodeServer.start(nodeConfig.getRight());
 
-        ServiceConsts.NODE_CONFIGS.forEach((node, ipPort) -> {
-            // TODO code 连接所有服务端node（包括当前node，自己的node）
-            connectNode(node, ipPort.getLeft(), ipPort.getRight());
+        // 启动NodeClient连接远程node，间隔10秒检测一次连接状态，断开重连
+        executorService.execute(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                checkChannelActive();
+
+                try {
+                    Thread.sleep(10 * 1000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 
@@ -89,9 +108,8 @@ public class ServiceNode {
      */
     private void connectNode(String node, String ip, int port) {
         final NodeClient nodeClient = new NodeClient(node);
-        nodeClient.connect(ip, port);
-
         nodeClients.put(node, nodeClient);
+        nodeClient.connect(ip, port);
     }
 
     /**
@@ -153,6 +171,8 @@ public class ServiceNode {
             final ServicePort servicePort = iterator.next();
             executorService.execute(servicePort);
         }
+
+
     }
 
     public String getName() {

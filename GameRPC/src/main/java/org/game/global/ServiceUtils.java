@@ -38,7 +38,7 @@ public class ServiceUtils {
         final ServicePort servicePort = serviceNode.getServicePort(portName);
         if (servicePort == null) {
             serviceNode.addServicePort(new ServicePort(portName, serviceNode));
-            logger.info("addServicePort portName = {}", portName);
+            logger.info("ServicePort added. port = {}", portName);
         }
         serviceNode.getServicePort(portName).addService(serviceName, serviceBase);
     }
