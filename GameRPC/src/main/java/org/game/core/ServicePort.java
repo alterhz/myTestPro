@@ -180,32 +180,16 @@ public class ServicePort implements Runnable {
                                 final Response response = new Response(request.getId(), 0);
                                 response.setResult(o);
 
-                                final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-                                final String replyNode = request.getRpcInvocation().getFromPoint().getNode();
-                                if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && replyNode.equals(serviceNode.getName())) {
-                                    // 当前node，直接转发
-                                    // 返回应答消息
-                                    serviceNode.dispatchResponse(response);
-                                } else {
-                                    // TODO code 网络发送rpc应答
-                                    serviceNode.getNode(replyNode).send(response);
-                                }
+                                final String replyNodeName = request.getRpcInvocation().getFromPoint().getNode();
+                                sendResponse(response, replyNodeName);
                             });
                         } else {
                             // Integer,Long,String等数据类型直接返回
                             final Response response = new Response(request.getId(), 0);
                             response.setResult(result);
 
-                            final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-                            final String replyNode = request.getRpcInvocation().getFromPoint().getNode();
-                            if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && replyNode.equals(serviceNode.getName())) {
-                                // 当前node，直接转发
-                                // 返回应答消息
-                                serviceNode.dispatchResponse(response);
-                            } else {
-                                // TODO code 网络发送rpc应答
-                                serviceNode.getNode(replyNode).send(response);
-                            }
+                            final String replyNodeName = request.getRpcInvocation().getFromPoint().getNode();
+                            sendResponse(response, replyNodeName);
                         }
                     }
                 } catch (NoSuchMethodException e) {
@@ -216,6 +200,18 @@ public class ServicePort implements Runnable {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void sendResponse(Response response, String replyNodeName) {
+        final ServiceNode curNode = ServicePort.getServicePort().getServiceNode();
+        if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && replyNodeName.equals(curNode.getName())) {
+            // 当前node，直接转发
+            // 返回应答消息
+            curNode.dispatchResponse(response);
+        } else {
+            // TODO code 网络发送rpc应答
+            curNode.getNode(replyNodeName).send(response);
         }
     }
 }

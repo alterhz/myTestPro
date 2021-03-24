@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Ziegler
  * date 2021/3/15
  */
-public class Request implements Serializable {
+public final class Request implements Serializable {
 
     private static final AtomicLong INVOKE_ID = new AtomicLong();
 

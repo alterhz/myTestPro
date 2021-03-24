@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import com.alibaba.com.caucho.hessian.io.Hessian2Input;
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
 
-public class RpcInvocation implements Serializable {
+public final class RpcInvocation implements Serializable {
 
     /** 调用rpc的线程调用点信息 */
     private FromPoint fromPoint;

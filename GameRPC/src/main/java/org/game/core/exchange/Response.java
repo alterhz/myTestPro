@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
-public class Response implements Serializable {
+public final class Response implements Serializable {
 
     private Long id;
     private int status = 0;

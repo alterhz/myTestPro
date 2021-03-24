@@ -65,46 +65,39 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
         final RpcInvocation rpcInvocation = new RpcInvocation(fromPoint, callPoint, method, args);
         request.setRpcInvocation(rpcInvocation);
 
-        final ServiceNode serviceNode = ServicePort.getServicePort().getServiceNode();
-        if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && callPoint.getNode().equals(serviceNode.getName())) {
-            // 当前node节点，无需网络，直接分发
-            if (rpcInvocation.isOneWay()) {
-                // 分发Request
-                serviceNode.dispatchRequest(request);
-                return null;
-            } else {
-                // 等待rpc返回
-                DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
-                // 分发Request
-                serviceNode.dispatchRequest(request);
-                if (rpcInvocation.isCompletableFuture()) {
-                    return future;
-                }
-
-                final long t1 = System.currentTimeMillis();
-                while (!future.isDone()) {
-                    ServicePort.getServicePort().pulse();
-                    if (System.currentTimeMillis() - t1 > 10 * 1000) {
-                        return new TimeoutException("RPC阻塞调用超时。");
-                    }
-                }
-
-                return future.get();
-            }
+        // 当前node节点，无需网络，直接分发
+        if (rpcInvocation.isOneWay()) {
+            // 分发Request
+            sendRequest(request, callPoint.getNode());
+            return null;
         } else {
-            // TODO code 通过网络发送Request
+            // 等待rpc返回
+            DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
+            // 分发Request
+            sendRequest(request, callPoint.getNode());
             if (rpcInvocation.isCompletableFuture()) {
-                // 等待rpc返回
-                DefaultFuture future = DefaultFuture.newFuture(request, 30 * 1000);
-                final NodeClient node = serviceNode.getNode(callPoint.getNode());
-                node.send(request);
                 return future;
-            } else {
-                // 分发Request
-                final NodeClient node = serviceNode.getNode(callPoint.getNode());
-                node.send(request);
-                return null;
             }
+
+            final long t1 = System.currentTimeMillis();
+            while (!future.isDone()) {
+                ServicePort.getServicePort().pulse();
+                if (System.currentTimeMillis() - t1 > 10 * 1000) {
+                    return new TimeoutException("RPC阻塞调用超时。");
+                }
+            }
+
+            return future.get();
+        }
+    }
+
+    private void sendRequest(Request request, String callNodeName) {
+        final ServiceNode curNode = ServicePort.getServicePort().getServiceNode();
+        if (!ServiceConsts.RPC_ALWAYS_USE_TRANSPORT && callNodeName.equals(curNode.getName())) {
+            // 不走网络，直接派发数据
+            curNode.dispatchRequest(request);
+        } else {
+            curNode.getNode(callNodeName).send(request);
         }
     }
 

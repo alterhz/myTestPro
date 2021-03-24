@@ -19,19 +19,20 @@ public class InitServiceImpl extends ServiceBase implements InitService {
     public void init() {
         logger.trace("InitServiceImpl.init");
 
-        logger.info("demoService.test()");
+        logger.info("1. RPC调用demoService.test()");
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         demoService.test();
 
-        logger.info("loginService.login()");
-        final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
-        final CompletableFuture<Integer> loginResult = loginService.login();
-        loginResult.whenComplete((value, throwable) -> logger.info("RPC返回结果：login result = {}", value));
+        logger.info("2. RPC调用demoService.getServiceName()");
+        final CompletableFuture<String> future = demoService.getServiceName();
+        future.whenComplete((s, throwable) -> {
+            // 异步处理
+            logger.info("2. RPC返回结果：Service名称 = " + s);
+        });
 
-        logger.info("阻塞调用loginService.login()");
-        final long t1 = System.currentTimeMillis();
-        final Integer loginId = loginService.allocLoginId();
-        final long t2 = System.currentTimeMillis();
-        logger.info("阻塞调用返回。耗时 = {}毫秒, loginId = {}", (t2 - t1), loginId);
+
+        logger.info("3. RPC阻塞调用demoService.getId()");
+        final Integer id = demoService.getId();
+        logger.info("3. RPC阻塞调用返回。id = {}", id);
     }
 }

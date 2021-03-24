@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * RPC调用点信息
  */
-public class CallPoint implements Serializable {
+public final class CallPoint implements Serializable {
     private final String node;
     private final String port;
     private final String service;

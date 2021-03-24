@@ -15,7 +15,6 @@ public class ClientTest {
     void callDemoService() {
         final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
         demoService.test();
-        demoService.go("jack");
         final CompletableFuture<String> serviceName = demoService.getServiceName();
         serviceName.whenComplete((name, throwable) -> System.out.println("name = " + name));
     }

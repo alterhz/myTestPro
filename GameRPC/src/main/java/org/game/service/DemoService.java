@@ -10,9 +10,18 @@ import org.game.provider.DemoServiceImpl;
         port = ServiceConsts.PORT1,
         serviceImplType = DemoServiceImpl.class)
 public interface DemoService {
+    /**
+     * 无返回值的PRC调用
+     */
     void test();
 
-    void go(String name);
-
+    /**
+     * 异步返回值的RPC调用
+     */
     CompletableFuture<String> getServiceName();
+
+    /**
+     * 阻塞RPC调用
+     */
+    Integer getId();
 }

@@ -3,6 +3,7 @@ package org.game.provider;
 import org.game.core.ServiceBase;
 import org.game.core.refer.ReferenceFactory;
 import org.game.service.DemoService;
+import org.game.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,26 +16,17 @@ public class DemoServiceImpl extends ServiceBase implements DemoService {
 
     @Override
     public void test() {
-        logger.trace("DemoServiceImpl.test");
-
-        logger.info("demoService.getServiceName()");
-        final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
-        final CompletableFuture<String> future = demoService.getServiceName();
-        future.whenComplete((s, throwable) -> {
-            //
-            logger.info("RPC返回结果：Service名称 = " + s);
-        });
-    }
-
-    @Override
-    public void go(String name) {
-        logger.info("DemoServiceImpl.go name = {}", name);
+        logger.info("1. 执行DemoServiceImpl.test");
     }
 
     @Override
     public CompletableFuture<String> getServiceName() {
-        logger.trace("DemoServiceImpl.getServiceName");
         return CompletableFuture.completedFuture("DemoServiceImpl");
+    }
+
+    @Override
+    public Integer getId() {
+        return 192;
     }
 
     @Override

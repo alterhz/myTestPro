@@ -18,10 +18,6 @@ public class LoginServiceImpl extends ServiceBase implements LoginService {
 
     @Override public CompletableFuture<Integer> login() {
         logger.trace("LoginServiceImpl.login");
-
-        logger.info("demoService.go(\"tom\")");
-        final DemoService demoService = ReferenceFactory.getProxy(DemoService.class);
-        demoService.go("tom");
         return CompletableFuture.completedFuture(20);
     }
 
@@ -32,5 +28,18 @@ public class LoginServiceImpl extends ServiceBase implements LoginService {
 
     @Override public void init() {
         logger.trace("LoginServiceImpl.init");
+
+        if (false) {
+            logger.info("loginService.login()");
+            final LoginService loginService = ReferenceFactory.getProxy(LoginService.class);
+            final CompletableFuture<Integer> loginResult = loginService.login();
+            loginResult.whenComplete((value, throwable) -> logger.info("RPC返回结果：login result = {}", value));
+
+            logger.info("阻塞调用loginService.login()");
+            final long t1 = System.currentTimeMillis();
+            final Integer loginId = loginService.allocLoginId();
+            final long t2 = System.currentTimeMillis();
+            logger.info("阻塞调用返回。耗时 = {}毫秒, loginId = {}", (t2 - t1), loginId);
+        }
     }
 }
