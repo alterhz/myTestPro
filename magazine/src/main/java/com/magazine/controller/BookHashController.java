@@ -37,7 +37,7 @@ public class BookHashController {
     @RequestMapping(value = "/{reader}", method=RequestMethod.POST)
     public String addBook(@PathVariable("reader") String reader, Book book) {
         if (!"zl".equals(reader)) {
-            return "redirect:/bookList/{reader}?msg=role";
+            return "redirect:/searchBook/1";
         }
 
         redisTemplate.opsForHash().put(KEY_HASH_BOOK, book.getName(), book);
