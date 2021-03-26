@@ -15,6 +15,10 @@ allprojects {
 	}
 }
 
+//apply plugin: 'watch'
+apply plugin: 'war'
+
+
 dependencies {
 // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
@@ -29,4 +33,7 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
 }
