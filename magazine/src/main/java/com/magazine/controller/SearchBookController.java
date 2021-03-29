@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,46 +24,39 @@ import java.util.Set;
 public class SearchBookController {
 
     public static final String KEY_HASH_BOOK = "hash:book";
+
     @Autowired
     private RedisTemplate redisTemplate;
 
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     public String home(@PathVariable("name") String name, Model model) {
-        final Set keys = redisTemplate.opsForHash().keys(KEY_HASH_BOOK);
-        final List<Book> bookList = redisTemplate.opsForHash().multiGet(KEY_HASH_BOOK, keys);
+        List<Book> bookList = new ArrayList<>();
+        Set keys = redisTemplate.keys("book:*");
+        for (Object key : keys) {
+            ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
+            Book book = valueOperations.get(key);
+            bookList.add(book);
+        }
         model.addAttribute("books", bookList);
-
         return "searchBook";
     }
 
     @RequestMapping(value = "/{name}", method = RequestMethod.POST)
     public String search(@RequestParam("name") String name, Model model) {
-        System.out.println("name = " + name);
-
         if (StringUtils.isEmpty(name)) {
             return "redirect:/searchBook/1";
         }
-
-        final List<Book> bookList = new ArrayList<>();
-//        final Object o = redisTemplate.opsForHash().get(KEY_HASH_BOOK, name);
-//        if (o != null) {
-//            bookList.add((Book) o);
-//        }
-
-        // 模糊搜索
-        final Cursor<Map.Entry<String, Book>> cursor = redisTemplate.opsForHash().scan(KEY_HASH_BOOK,
-                ScanOptions.scanOptions().match("*" + name + "*").count(10).build());
-        while (cursor.hasNext()) {
-            final Map.Entry<String, Book> next = cursor.next();
-            final Book book = next.getValue();
+        List<Book> bookList = new ArrayList<>();
+        Set keys = redisTemplate.keys("book:*" + name + "*");
+        for (Object key : keys) {
+            ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
+            Book book = valueOperations.get(key);
             bookList.add(book);
         }
-
-
         model.addAttribute("books", bookList);
-
         return "searchBook";
     }
+
 
 
 }
