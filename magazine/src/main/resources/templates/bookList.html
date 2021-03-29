@@ -7,63 +7,24 @@
     </head>
 
 <body>
+<nav class="navbar navbar-default">
+    <a class="navbar-brand active" href="#">期刊列表</a>
+    <a class="navbar-brand" th:href="@{/bookSchema/}">字段列表</a>
+</nav>
+
+<h3>配置数据</h3>
+<form method="post" class="form-inline" th:action="@{/bookList/saveConfig}">
+    <div class="form-group">
+        <label for="searchField">搜索字段名称</label>
+        <input type="text" class="form-control" id="searchField" name = "searchField" th:value="*{searchField}" placeholder="搜索字段名称">
+    </div>
+    <button type="submit" class="btn btn-primary">保存</button>
+</form>
+
 <h3>添加期刊</h3>
 <form method="post" class="form-inline">
-    <div class="form-group">
-        <label class="sr-only" for="name">期刊名称</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="期刊名称">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="level">级别</label>
-        <input type="text" class="form-control" id="level" name="level" placeholder="级别">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="takeOn">收录</label>
-        <input type="text" class="form-control" id="takeOn" name="takeOn" placeholder="收录">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="issueDate">刊期</label>
-        <input type="text" class="form-control" id="issueDate" name="issueDate" placeholder="刊期">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="issueMonth">出刊月</label>
-        <input type="text" class="form-control" id="issueMonth" name="issueMonth" placeholder="出刊月">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="character">字符</label>
-        <input type="text" class="form-control" id="character" name="character" placeholder="字符">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="price">卖价</label>
-        <input type="text" class="form-control" id="price" name="price" placeholder="卖价">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="draw">提成</label>
-        <input type="text" class="form-control" id="draw" name="draw" placeholder="提成">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="company">主管/主办单位</label>
-        <input type="text" class="form-control" id="company" name="company" placeholder="主管/主办单位">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="isbn">刊号</label>
-        <input type="text" class="form-control" id="isbn" name="isbn" placeholder="刊号">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="mailNumber">邮发代号</label>
-        <input type="text" class="form-control" id="mailNumber" name="mailNumber" placeholder="邮发代号">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="issueInterval">发行周期</label>
-        <input type="text" class="form-control" id="issueInterval" name="issueInterval" placeholder="发行周期">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="pages">页码</label>
-        <input type="text" class="form-control" id="pages" name="pages" placeholder="页码">
-    </div>
-    <div class="form-group">
-        <label class="sr-only" for="note">备注</label>
-        <input type="text" class="form-control" id="note" name="note" placeholder="备注">
+    <div class="form-group" th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}">
+        <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}">
     </div>
 
     <button type="submit" class="btn btn-primary">添加</button>
@@ -74,119 +35,19 @@
         <thead>
         <tr>
             <th>#</th>
-            <th>期刊名称</th>
-            <th>级别</th>
-            <th>收录</th>
-            <th>刊期</th>
-            <th>出刊月</th>
-            <th>字符</th>
-            <th>卖价</th>
-            <th>提成</th>
-            <th>主管/主办单位</th>
-            <th>刊号</th>
-            <th>邮发代号</th>
-            <th>发行周期</th>
-            <th>页码</th>
-            <th>备注</th>
+            <th th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="*{field}">期刊名称</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody th:unless="${#lists.isEmpty(books)}">
         <tr th:each="book : ${books}" class="bookEdit">
-            <th scope="row">1</th>
-            <td class="name" th:text="${book.name}">name</td>
-            <td class="level" th:text="${book.level}">level</td>
-            <td class="takeOn" th:text="${book.takeOn}">takeOn</td>
-            <td class="issueDate" th:text="${book.issueDate}">issueDate</td>
-            <td class="issueMonth" th:text="${book.issueMonth}">issueMonth</td>
-            <td class="character" th:text="${book.character}">character</td>
-            <td class="price" th:text="${book.price}">price</td>
-            <td class="draw" th:text="${book.draw}">draw</td>
-            <td class="company" th:text="${book.company}">company</td>
-            <td class="isbn" th:text="${book.isbn}">isbn</td>
-            <td class="mailNumber" th:text="${book.mailNumber}">mailNumber</td>
-            <td class="issueInterval" th:text="${book.issueInterval}">issueInterval</td>
-            <td class="pages" th:text="${book.pages}">pages</td>
-            <td class="note" th:text="${book.note}">note</td>
+            <th scope="row" class = "id" th:text = "${book.get('id')}">1</th>
+            <td th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="${book.get(field)}">name</td>
+            <td><a th:href="@{/bookList/edit?id=}+${book.get('id')}">编辑</a></td>
         </tr>
+
         </tbody>
     </table>
-    <hr/>
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">修改期刊数据</h4>
-            </div>
-            <form method="post" class="form-inline">
-                <div class="modal-body">
-                        <div class="form-group">
-                            <label class="sr-only" for="name">期刊名称</label>
-                            <input type="text" class="form-control name" name="name" placeholder="期刊名称" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="level">级别</label>
-                            <input type="text" class="form-control level" name="level" placeholder="级别">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="takeOn">收录</label>
-                            <input type="text" class="form-control takeOn" name="takeOn" placeholder="收录">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="issueDate">刊期</label>
-                            <input type="text" class="form-control issueDate" name="issueDate" placeholder="刊期">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="issueMonth">出刊月</label>
-                            <input type="text" class="form-control issueMonth" name="issueMonth" placeholder="出刊月">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="character">字符</label>
-                            <input type="text" class="form-control character" name="character" placeholder="字符">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="price">卖价</label>
-                            <input type="text" class="form-control price" name="price" placeholder="卖价">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="draw">提成</label>
-                            <input type="text" class="form-control draw" name="draw" placeholder="提成">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="company">主管/主办单位</label>
-                            <input type="text" class="form-control company" name="company" placeholder="主管/主办单位">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="isbn">刊号</label>
-                            <input type="text" class="form-control isbn" name="isbn" placeholder="刊号">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="mailNumber">邮发代号</label>
-                            <input type="text" class="form-control mailNumber" name="mailNumber" placeholder="邮发代号">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="issueInterval">发行周期</label>
-                            <input type="text" class="form-control issueInterval" name="issueInterval" placeholder="发行周期">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="pages">页码</label>
-                            <input type="text" class="form-control pages" name="pages" placeholder="页码">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="note">备注</label>
-                            <input type="text" class="form-control note" name="note" placeholder="备注">
-                        </div>
-                </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="submit" class="btn btn-primary">保存修改</button>
-            </div>
-
-            </form>
-        </div>
-    </div>
-</div>
 
     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
@@ -195,21 +56,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('.bookEdit').click(function() {
-                $('#myModal .name').val($(this).children('.name').text());
-                $('#myModal .level').val($(this).children('.level').text());
-                $('#myModal .takeOn').val($(this).children('.takeOn').text());
-                $('#myModal .issueDate').val($(this).children('.issueDate').text());
-                $('#myModal .issueMonth').val($(this).children('.issueMonth').text());
-                $('#myModal .character').val($(this).children('.character').text());
-                $('#myModal .price').val($(this).children('.price').text());
-                $('#myModal .draw').val($(this).children('.draw').text());
-                $('#myModal .company').val($(this).children('.company').text());
-                $('#myModal .isbn').val($(this).children('.isbn').text());
-                $('#myModal .mailNumber').val($(this).children('.mailNumber').text());
-                $('#myModal .issueInterval').val($(this).children('.issueInterval').text());
-                $('#myModal .pages').val($(this).children('.pages').text());
-                $('#myModal .note').val($(this).children('.note').text());
-                $('#myModal').modal();
+                console.log($(this).children('.id').text());
             });
         });
     </script>

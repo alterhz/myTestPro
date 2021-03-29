@@ -31,7 +31,7 @@ public class TestRedis {
 
     @Test
     public void testObj() throws Exception {
-        Book book=new Book("kak");
+        Book book=new Book();
         ValueOperations<String, Book> operations=redisTemplate.opsForValue();
         operations.set("com.neox", book);
         operations.set("com.neo.f", book,1, TimeUnit.SECONDS);

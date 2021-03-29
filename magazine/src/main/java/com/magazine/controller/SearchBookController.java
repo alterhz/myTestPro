@@ -1,61 +1,54 @@
 package com.magazine.controller;
 
-import com.magazine.model.Book;
+import com.magazine.constant.RedisConsts;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.Collator;
+import java.util.*;
 
 @Controller
 @RequestMapping("/searchBook")
 public class SearchBookController {
 
-    public static final String KEY_HASH_BOOK = "hash:book";
-
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public String home(@PathVariable("name") String name, Model model) {
-        List<Book> bookList = new ArrayList<>();
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String search(@RequestParam("name") String name, Model model) {
+        final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
+        model.addAttribute("fields", fields);
+
+        final String searchField = ControllerUtils.getConfigSearchField(redisTemplate);
+        model.addAttribute("searchField", searchField);
+
+        List<Map> bookList = new ArrayList<>();
         Set keys = redisTemplate.keys("book:*");
         for (Object key : keys) {
-            ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
-            Book book = valueOperations.get(key);
-            bookList.add(book);
+            final Map keyValues = (Map)redisTemplate.opsForValue().get(key);
+            assert keyValues != null;
+            final String nameValue = (String)keyValues.get(searchField);
+            if (StringUtils.isEmpty(name)) {
+                bookList.add(keyValues);
+            } else if (StringUtils.containsAny(nameValue, name)) {
+                bookList.add(keyValues);
+            }
         }
+
+        ControllerUtils.sortByField(bookList, searchField);
+
         model.addAttribute("books", bookList);
+        model.addAttribute("name", name);
         return "searchBook";
     }
 
-    @RequestMapping(value = "/{name}", method = RequestMethod.POST)
-    public String search(@RequestParam("name") String name, Model model) {
-        if (StringUtils.isEmpty(name)) {
-            return "redirect:/searchBook/1";
-        }
-        List<Book> bookList = new ArrayList<>();
-        Set keys = redisTemplate.keys("book:*" + name + "*");
-        for (Object key : keys) {
-            ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
-            Book book = valueOperations.get(key);
-            bookList.add(book);
-        }
-        model.addAttribute("books", bookList);
-        return "searchBook";
-    }
 
 
 

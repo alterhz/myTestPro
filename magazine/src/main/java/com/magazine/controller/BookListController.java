@@ -1,19 +1,18 @@
 package com.magazine.controller;
 
-import com.magazine.dao.BookListRepository;
-import com.magazine.model.Book;
+import com.magazine.constant.RedisConsts;
+import com.magazine.dao.RedisSequenceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.text.Collator;
+import java.util.*;
 
 @Controller
 @RequestMapping("/bookList")
@@ -22,30 +21,84 @@ public class BookListController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @RequestMapping(value = "/{reader}", method = RequestMethod.GET)
-    public String books(@PathVariable("reader") String reader, Model model) {
+    @Autowired
+    private RedisSequenceFactory redisSequenceFactory;
 
-        List<Book> bookList = new ArrayList<>();
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String bookAll(Model model) {
+        final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
+        model.addAttribute("fields", fields);
+
+        final String searchField = ControllerUtils.getConfigSearchField(redisTemplate);
+        model.addAttribute("searchField", searchField);
+
+        List<Map> bookList = new ArrayList<>();
         Set keys = redisTemplate.keys("book:*");
         for (Object key : keys) {
-            ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
-            Book book = valueOperations.get(key);
-            bookList.add(book);
+            final Map keyValues = (Map)redisTemplate.opsForValue().get(key);
+            bookList.add(keyValues);
         }
-        model.addAttribute("books", bookList);
 
+        ControllerUtils.sortByField(bookList, searchField);
+
+        model.addAttribute("books", bookList);
         return "bookList";
     }
 
-    @RequestMapping(value = "/{reader}", method=RequestMethod.POST)
-    public String addBook(@PathVariable("reader") String reader, Book book) {
-        if (!"zl".equals(reader)) {
-            return "redirect:/bookList/{reader}?msg=role";
+    @RequestMapping(value = "/", method=RequestMethod.POST)
+    public String addBook(@RequestParam() Map keyValue) {
+        final String id;
+        if (keyValue.containsKey(RedisConsts.ID)) {
+            id = (String)keyValue.get(RedisConsts.ID);
+        } else {
+            final long genID = redisSequenceFactory.generate("id", 1);
+            id = String.valueOf(genID);
+            keyValue.put(RedisConsts.ID, id);
+        }
+        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
+        redisTemplate.opsForValue().set(key, keyValue);
+        return "redirect:/bookList/";
+    }
+
+    @RequestMapping(value = "/edit", method=RequestMethod.GET)
+    public String edit(@RequestParam("id") String id, Model model) {
+        final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
+        model.addAttribute("fields", fields);
+
+        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
+        final Object book = redisTemplate.opsForValue().get(key);
+        if (book == null) {
+            System.out.println("edit book is null. key = " + key);
+            return "error";
+        } else {
+            model.addAttribute("book", book);
+        }
+        return "editBook";
+    }
+
+    @RequestMapping(value = "/del", method=RequestMethod.GET)
+    public String del(@RequestParam("id") String id, Model model) {
+        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
+        final Boolean delete = redisTemplate.delete(key);
+        if (delete) {
+            model.addAttribute("msg", "删除成功！");
+        } else {
+            System.out.println("del book is null. key = " + key);
+            return "error";
         }
 
-        ValueOperations<String, Book> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set("book:" + book.getName(), book);
-        return "redirect:/bookList/{reader}";
+        return "redirect:/bookList/";
     }
+
+    @RequestMapping(value = "/saveConfig", method=RequestMethod.POST)
+    public String saveConfig(@RequestParam() Map keyValue) {
+
+        keyValue.forEach((k, v) -> {
+            redisTemplate.opsForHash().put(RedisConsts.CONFIG_KEY, k, v);
+        });
+
+        return "redirect:/bookList/";
+    }
+
 
 }

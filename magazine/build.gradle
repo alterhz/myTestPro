@@ -15,8 +15,7 @@ allprojects {
 	}
 }
 
-//apply plugin: 'watch'
-apply plugin: 'war'
+//apply plugin: 'war'
 
 
 dependencies {
@@ -28,6 +27,7 @@ dependencies {
 	runtime("com.h2database:h2")
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation("org.springframework.boot:spring-boot-devtools")
 
 }
 
