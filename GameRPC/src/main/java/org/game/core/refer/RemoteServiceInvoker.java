@@ -1,21 +1,18 @@
 package org.game.core.refer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.game.core.*;
+import org.game.core.exchange.Request;
+import org.game.global.ServiceConsts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.game.core.*;
-import org.game.core.exchange.Request;
-import org.game.core.exchange.Utils;
-import org.game.core.transport.node.NodeClient;
-import org.game.global.ServiceConsts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class RemoteServiceInvoker<T> implements InvocationHandler {
@@ -54,6 +51,10 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
                     + ", args = " + StringUtils.join(args));
         }
 
+        if (ServicePort.getServicePort() == null) {
+            throw new IllegalStateException("RPC调用需要在ServicePort线程。");
+        }
+
         // 服务的远程调用点
         final CallPoint callPoint = getServiceCallPoint();
         // 当前线程的调用点
@@ -81,6 +82,7 @@ public class RemoteServiceInvoker<T> implements InvocationHandler {
 
             final long t1 = System.currentTimeMillis();
             while (!future.isDone()) {
+                // 判断当前是ServicePort线程
                 ServicePort.getServicePort().pulseOne();
                 if (System.currentTimeMillis() - t1 > 10 * 1000) {
                     return new TimeoutException("RPC阻塞调用超时。");

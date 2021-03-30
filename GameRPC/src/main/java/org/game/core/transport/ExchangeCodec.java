@@ -26,81 +26,49 @@ public class ExchangeCodec extends ByteToMessageCodec {
         if (msg instanceof String) {
             final String str = (String) msg;
 
-            final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
-
-            int length = 0;
+            out.writeByte(FLAG_STRING);
             final byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
             out.writeBytes(bytes);
-            length += str.length();
-
-            // 写入消息包头
-            out.writerIndex(headIndex);
-            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
-            out.writeByte(FLAG_STRING);
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         } else if (msg instanceof Request) {
             final Request request = (Request) msg;
 
-            final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
-
-            int length = 0;
+            out.writeByte(FLAG_REQUEST);
             final byte[] encode = Utils.encode(request);
             out.writeBytes(encode);
-            length += encode.length;
-
-            // 写入消息包头
-            out.writerIndex(headIndex);
-            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
-            out.writeByte(FLAG_REQUEST);
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         } else if (msg instanceof Response) {
             final Response response = (Response) msg;
 
-            final int headIndex = out.writerIndex();
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH);
-
-            int length = 0;
+            out.writeByte(FLAG_RESPONSE);
             final byte[] encode = Utils.encode(response);
             out.writeBytes(encode);
-            length += encode.length;
-
-            // 写入消息包头
-            out.writerIndex(headIndex);
-            out.writeInt(TransportConsts.HEAD_LENGTH + length - TransportConsts.HEAD_LENGTH_FIELD_LENGTH);
-            out.writeByte(FLAG_RESPONSE);
-            out.writerIndex(headIndex + TransportConsts.HEAD_LENGTH + length);
         }
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List out) throws Exception {
-        final int fieldLength = in.readInt();
         final byte flag = in.readByte();
+        final int length = in.readableBytes();
         if (flag == FLAG_STRING) {
-            final ByteBuf byteBuf = in.readBytes(fieldLength - 1);
+            final ByteBuf byteBuf = in.readBytes(length);
             final String str = String.valueOf(byteBuf.toString(StandardCharsets.UTF_8));
 
             out.add(str);
-            logger.trace("接收到消息包长度。fieldLength = {}, in.length = {}, str = {}", fieldLength, in.readableBytes(), str);
+            logger.debug("接收到消息包长度。length = {}, str = {}", length, str);
         } else if (flag == FLAG_REQUEST) {
-            int length = fieldLength - TransportConsts.HEAD_FLAG_LENGTH;
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
 
             final Request request = Utils.decode(buffer);
 
             out.add(request);
-            logger.trace("接收到消息包长度。fieldLength = {}, in.length = {}, request.id = {}", fieldLength, in.readableBytes(), request.getId());
+            logger.debug("接收到消息包长度。length = {}, request.id = {}", length, request.getId());
         } else if (flag == FLAG_RESPONSE) {
-            int length = fieldLength - TransportConsts.HEAD_FLAG_LENGTH;
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
 
             final Response response = Utils.decode(buffer);
             out.add(response);
-            logger.trace("接收到消息包长度。fieldLength = {}, in.length = {}, response.id = {}", fieldLength, in.readableBytes(), response.getId());
+            logger.debug("接收到消息包长度。length = {}, response.id = {}", length, response.getId());
         }
     }
 }

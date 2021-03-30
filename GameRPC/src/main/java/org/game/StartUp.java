@@ -1,16 +1,11 @@
 package org.game;
 
 import org.game.core.ServiceNode;
-import org.game.core.ServicePort;
 import org.game.global.ServiceConsts;
 import org.game.global.ServiceUtils;
-import org.game.provider.DemoServiceImpl;
-import org.game.provider.InitServiceImpl;
-import org.game.provider.LoginServiceImpl;
 import org.game.service.DemoService;
 import org.game.service.InitService;
 import org.game.service.LoginService;
-import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +41,8 @@ public class StartUp {
         ServiceUtils.addService(serviceNode, LoginService.class);
 
         serviceNode.startAllService();
+
+        logger.debug("RPC_ALWAYS_USE_TRANSPORT = {}", ServiceConsts.RPC_ALWAYS_USE_TRANSPORT);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // 关闭

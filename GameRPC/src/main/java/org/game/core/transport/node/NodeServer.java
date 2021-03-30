@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.game.core.ServiceNode;
 import org.game.core.transport.ExchangeCodec;
@@ -42,10 +43,14 @@ public class NodeServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new LengthFieldBasedFrameDecoder(TransportConsts.MAX_FRAME_LENGTH, 0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
+                                .addLast(new LengthFieldPrepender(TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
+                                .addLast(new LengthFieldBasedFrameDecoder(TransportConsts.MAX_FRAME_LENGTH,
+                                        0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH,
+                                        0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
                                 .addLast("hessianCodec", new ExchangeCodec())
                                 .addLast("server-idle-handler", new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
                                 .addLast("handler", new ServerHandler(serviceNode));
+//                                .addLast(new LengthFieldPrepender(TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
                     }
                 });
     }
