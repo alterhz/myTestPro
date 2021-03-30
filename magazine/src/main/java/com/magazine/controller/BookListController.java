@@ -1,5 +1,7 @@
 package com.magazine.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magazine.constant.RedisConsts;
 import com.magazine.dao.RedisSequenceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class BookListController {
     }
 
     @RequestMapping(value = "/", method=RequestMethod.POST)
-    public String addBook(@RequestParam() Map keyValue) {
+    public String addBook(@RequestParam() Map keyValue) throws JsonProcessingException {
         final String id;
         if (keyValue.containsKey(RedisConsts.ID)) {
             id = (String)keyValue.get(RedisConsts.ID);
@@ -57,6 +59,9 @@ public class BookListController {
         }
         String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
         redisTemplate.opsForValue().set(key, keyValue);
+
+//
+
         return "redirect:/bookList/";
     }
 
@@ -96,6 +101,7 @@ public class BookListController {
         keyValue.forEach((k, v) -> {
             redisTemplate.opsForHash().put(RedisConsts.CONFIG_KEY, k, v);
         });
+
 
         return "redirect:/bookList/";
     }
