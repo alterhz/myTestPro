@@ -31,13 +31,14 @@ public class SearchBookController {
 
         List<Map> bookList = new ArrayList<>();
         Set keys = redisTemplate.keys("book:*");
+
         for (Object key : keys) {
             final Map keyValues = (Map)redisTemplate.opsForValue().get(key);
             assert keyValues != null;
             final String nameValue = (String)keyValues.get(searchField);
             if (StringUtils.isEmpty(name)) {
                 bookList.add(keyValues);
-            } else if (StringUtils.containsAny(nameValue, name)) {
+            } else if (StringUtils.contains(nameValue, name)) {
                 bookList.add(keyValues);
             }
         }
