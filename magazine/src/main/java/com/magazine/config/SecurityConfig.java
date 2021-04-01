@@ -9,9 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/bookList/**").authenticated()
+                .antMatchers("/bookSchema/**").authenticated()
+                .antMatchers("/bookConfig/**").authenticated()
                 .anyRequest().permitAll()
 
                 .and()
