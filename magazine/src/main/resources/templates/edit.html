@@ -71,37 +71,24 @@
     </nav>
 
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-      <h1>期刊列表</h1>
-      <h2>添加期刊</h2>
+      <h1>数据编辑</h1>
+      <h2>修改数据</h2>
       <form method="post" class="form-inline" th:action="@{/bookList/add}">
-
+        <input type="text" class="form-control" name="id" th:value="${book.get('id')}" readonly>
         <div class="form-group" th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}">
-          <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}">
+          <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}" th:value="${book.get(field)}">
         </div>
-        <button type="submit" class="btn btn-primary">添加</button>
+
+        <button type="submit" class="btn btn-primary">修改</button>
+
       </form>
 
-      <br/>
 
-      <h2>所有期刊</h2>
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="*{field}">期刊名称</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody th:unless="${#lists.isEmpty(books)}">
-          <tr th:each="book : ${books}" class="bookEdit">
-            <th scope="row" class = "id" th:text = "${book.get('id')}">1</th>
-            <td th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="${book.get(field)}">name</td>
-            <td><a th:href="@{/bookList/edit?id=}+${book.get('id')}">编辑</a></td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+      <a class="btn btn-link" th:href="@{/bookList/}">返回</a>
+
+      <hr/>
+      <a class="btn btn-danger" th:href="@{/bookList/del?id=}+${book.get('id')}">删除</a>
+
     </main>
   </div>
 </div>

@@ -1,17 +1,14 @@
 package com.magazine.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-
-import java.util.Arrays;
-import java.util.Collection;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin()
-//                    .loginPage("/login")
-                    .defaultSuccessUrl("/bookList/")
+                .loginPage("/login")
+                .defaultSuccessUrl("/bookList/")
 
                 .and()
                     .rememberMe()
@@ -36,45 +33,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .key("BookSecured");
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(username -> new UserDetails() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return Arrays.asList(new SimpleGrantedAuthority("ADMIN"));
-            }
-
-            @Override
-            public String getPassword() {
-                return "zl_0401";
-            }
-
-            @Override
-            public String getUsername() {
-                return "zhanglu";
-            }
-
-            @Override
-            public boolean isAccountNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isAccountNonLocked() {
-                return true;
-            }
-
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        }).passwordEncoder(NoOpPasswordEncoder.getInstance());
+    @Bean
+    public UserDetailsService users() {
+        // The builder will ensure the passwords are encoded before saving in memory
+        User.UserBuilder users = User.withDefaultPasswordEncoder();
+        UserDetails user = users
+                .username("zhanglu")
+                .password("zl_0401")
+                .roles("USER")
+                .build();
+        UserDetails admin = users
+                .username("admin")
+                .password("123")
+                .roles("USER", "ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
-
 
 }

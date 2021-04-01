@@ -6,5 +6,8 @@
 5. 字段类型配置，搜索配置。
 
 
+- 1.2.0-SNAPSHOT
+1. 修改后台页面
+
 - 1.1.3-SNAPSHOT
 1.增加"/bookSchema/"、"/bookConfig/"路径的权限限制。

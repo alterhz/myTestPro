@@ -49,13 +49,13 @@
       <div class="sidebar-sticky pt-3">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active" th:href="@{/bookList/}">
+            <a class="nav-link" th:href="@{/bookList/}">
               <span data-feather="home"></span>
               期刊列表 <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/config/}">
+            <a class="nav-link active" th:href="@{/config/}">
               <span data-feather="file"></span>
               配置
             </a>
@@ -71,37 +71,24 @@
     </nav>
 
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-      <h1>期刊列表</h1>
-      <h2>添加期刊</h2>
-      <form method="post" class="form-inline" th:action="@{/bookList/add}">
-
-        <div class="form-group" th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}">
-          <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}">
+      <h1>配置</h1>
+      <div class="alert alert-success" role="alert" th:if="${msg}" th:text="${msg}">您有新的消息！</div>
+      <h2>Book表字段列表</h2>
+      <form method="post" class="form-inline" th:action="@{/config/saveSchema}">
+        <div class="form-group" th:each = "i:${#numbers.sequence(0,19)}">
+          <input type="text" class="form-control" name="fields" th:value="${#lists.size(fields) > i} ? *{fields[i]} : ''" th:placeholder="'字段名称' + *{i+1}">
         </div>
-        <button type="submit" class="btn btn-primary">添加</button>
+        <button type="submit" class="btn btn-primary">更新</button>
       </form>
 
-      <br/>
-
-      <h2>所有期刊</h2>
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="*{field}">期刊名称</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody th:unless="${#lists.isEmpty(books)}">
-          <tr th:each="book : ${books}" class="bookEdit">
-            <th scope="row" class = "id" th:text = "${book.get('id')}">1</th>
-            <td th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" th:text="${book.get(field)}">name</td>
-            <td><a th:href="@{/bookList/edit?id=}+${book.get('id')}">编辑</a></td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+      <h2>搜索字段</h2>
+      <form method="post" class="form-inline" th:action="@{/config/saveConfig}">
+        <div class="form-group">
+          <label for="searchField">搜索字段名称</label>
+          <input type="text" class="form-control" id="searchField" name = "searchField" th:value="*{searchField}" placeholder="搜索字段名称">
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </form>
     </main>
   </div>
 </div>

@@ -75,7 +75,7 @@ public class BookListController {
         } else {
             model.addAttribute("book", book);
         }
-        return "editBook";
+        return "edit";
     }
 
     @RequestMapping(value = "/del", method=RequestMethod.GET)
