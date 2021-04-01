@@ -15,7 +15,7 @@ import java.text.Collator;
 import java.util.*;
 
 @Controller
-@RequestMapping("/searchBook")
+@RequestMapping("/")
 public class SearchBookController {
 
     @Autowired

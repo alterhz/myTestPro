@@ -7,13 +7,9 @@
     </head>
 
 <body>
-<nav class="navbar navbar-default">
-    <a class="navbar-brand active" th:href="@{/bookList/}">期刊列表</a>
-    <a class="navbar-brand" th:href="@{/bookSchema/}">字段列表</a>
-    <a class="navbar-brand" th:href="@{/searchBook/?name=}">搜索页</a>
-</nav>
+<div th:insert="~{header :: nav}"></div>
 
-    <form method="post" class="form-inline" th:action="@{/bookList/}">
+    <form method="post" class="form-inline" th:action="@{/bookList/add}">
         <input type="text" class="form-control" name="id" th:value="${book.get('id')}" readonly>
         <div class="form-group" th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}">
             <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}" th:value="${book.get(field)}">

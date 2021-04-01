@@ -7,24 +7,10 @@
     </head>
 
 <body>
-<nav class="navbar navbar-default">
-    <a class="navbar-brand active" href="#">期刊列表</a>
-    <a class="navbar-brand" th:href="@{/bookSchema/}">字段列表</a>
-    <a class="navbar-brand" th:href="@{/searchBook/?name=}">搜索页</a>
-    <a class="navbar-brand" th:href="@{/logout}">退出</a>
-</nav>
-
-<h3>配置数据</h3>
-<form method="post" class="form-inline" th:action="@{/bookList/saveConfig}">
-    <div class="form-group">
-        <label for="searchField">搜索字段名称</label>
-        <input type="text" class="form-control" id="searchField" name = "searchField" th:value="*{searchField}" placeholder="搜索字段名称">
-    </div>
-    <button type="submit" class="btn btn-primary">保存</button>
-</form>
+<div th:insert="~{header :: nav}"></div>
 
 <h3>添加期刊</h3>
-<form method="post" class="form-inline">
+<form method="post" class="form-inline" th:action="@{/bookList/add}">
     <div class="form-group" th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}">
         <input type="text" class="form-control" id="name" th:name="*{field}" th:placeholder="*{field}">
     </div>

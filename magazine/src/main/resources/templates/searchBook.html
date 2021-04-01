@@ -24,7 +24,7 @@
 
     <ul class="list-inline bg-info" th:each="book:${books}">
         <li><h3 th:text = "'# : ' + ${book.get('id')}"># : 1</h3></li>
-        <li th:if = "${#strings.length(field) > 0}" th:each = "field:${fields}" >
+        <li th:if = "${!#strings.isEmpty(field) && !#strings.isEmpty(book.get(field))}" th:each = "field:${fields}" >
             <h3>
                 <span th:text="${field}+':'">名称 : </span>
                 <span class="label-info bookFieldValue" >

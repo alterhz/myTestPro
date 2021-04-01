@@ -24,14 +24,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/bookList/**").authenticated()
-//                .antMatchers("/bookSchema/**").access("hasRole('ADMIN')")
-                .antMatchers("/**").permitAll()
+                .anyRequest().permitAll()
+
                 .and()
                 .formLogin()
+//                    .loginPage("/login")
+                    .defaultSuccessUrl("/bookList/")
+
                 .and()
-                .rememberMe()
-                .tokenValiditySeconds(2419200)
-                .key("BookSecured");
+                    .rememberMe()
+                    .tokenValiditySeconds(2419200)
+                    .key("BookSecured");
     }
 
     @Override
@@ -44,12 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             @Override
             public String getPassword() {
-                return "zhangLu2021";
+                return "zl_0401";
             }
 
             @Override
             public String getUsername() {
-                return "admin";
+                return "zhanglu";
             }
 
             @Override

@@ -7,12 +7,14 @@
     </head>
 
     <body>
+        <div th:if="${param.error}">无效的用户名或者密码！</div>
+        <div th:if="${param.logout}">你已经退出。</div>
         <form name="f" th:action="@{/login}" method="post">
-            <input type="text" name="username" value="">
-            <input type="password" name="password">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="password">
             <label for="remember_me">保持登陆</label>
             <input type="checkbox" id="remember_me" name="remember-me">
-            <input name="submit" type="submit" value="login"/>
+            <input name="submit" type="submit" value="登陆"/>
         </form>
     </body>
 </html>

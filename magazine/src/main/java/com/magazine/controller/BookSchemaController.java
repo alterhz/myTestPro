@@ -8,11 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.thymeleaf.util.ListUtils;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/bookSchema")
@@ -25,13 +23,15 @@ public class BookSchemaController {
     public String schema(Model model) {
         final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
         model.addAttribute("fields", fields);
+        final String searchField = ControllerUtils.getConfigSearchField(redisTemplate);
+        model.addAttribute("searchField", searchField);
         return "bookSchema";
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public String saveSchema(@RequestParam("fields") String[] fields, Model model) {
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public String saveSchema(@RequestParam("fields") String[] fields) {
         redisTemplate.delete(RedisConsts.BOOK_SCHEMA_KEY);
-        redisTemplate.opsForList().leftPushAll(RedisConsts.BOOK_SCHEMA_KEY, fields);
+        redisTemplate.opsForList().leftPushAll(RedisConsts.BOOK_SCHEMA_KEY, Arrays.asList(fields));
         return "redirect:/bookSchema/";
     }
 
