@@ -15,10 +15,10 @@ allprojects {
 	}
 }
 
-apply plugin: 'war'
-war {
-
-}
+//apply plugin: 'war'
+//war {
+//
+//}
 
 dependencies {
 // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -33,7 +33,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation("org.springframework.boot:spring-boot-devtools")
-	providedCompile('org.springframework.boot:spring-boot-starter-tomcat')
+//	providedCompile('org.springframework.boot:spring-boot-starter-tomcat')
 
 }
 

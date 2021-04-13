@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
  * date 2021/4/2
  */
 
+@Deprecated
 @Controller
-@RequestMapping("/view")
+@RequestMapping("/visit")
 public class VisitController {
 
     /**
