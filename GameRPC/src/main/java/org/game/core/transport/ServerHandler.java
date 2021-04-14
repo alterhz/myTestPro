@@ -9,6 +9,13 @@ import org.game.core.exchange.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * node服务器handler
+ * <p>在方法 {@link ServerHandler#channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object)} 中派发。当前只派发
+ * {@link Request} 和 {@link Response}这两种对象类型。</p>
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class ServerHandler extends ChannelDuplexHandler {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);

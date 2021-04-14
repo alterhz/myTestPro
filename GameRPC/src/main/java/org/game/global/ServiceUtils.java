@@ -7,6 +7,12 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Service的工具类
+ *
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class ServiceUtils {
 
     /** logger */

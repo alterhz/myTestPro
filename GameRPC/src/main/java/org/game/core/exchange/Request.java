@@ -6,13 +6,15 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * rpc请求对象
+ * rpc请求对应
  * @author Ziegler
  * date 2021/3/15
  */
 public final class Request implements Serializable {
 
-    private static final AtomicLong INVOKE_ID = new AtomicLong();
+    private static transient final AtomicLong INVOKE_ID = new AtomicLong();
+
+    private static final long serialVersionUID = 9104092580669691633L;
 
     /** 请求id */
     private Long id;

@@ -6,7 +6,16 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+/**
+ * 发起调用的点信息
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public final class FromPoint implements Serializable {
+
+    private static final long serialVersionUID = 9104092580669691633L;
+
     private final String node;
     private final String port;
 

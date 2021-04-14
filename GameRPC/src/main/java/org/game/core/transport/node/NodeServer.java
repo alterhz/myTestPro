@@ -21,6 +21,19 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * node服务器
+ * <p>服务端只负责接收消息，不发送消息</p>
+ * <h3>消息包结构</h3>
+ * <ul>
+ *     <li>Length : 4 bytes (Length value = n bytes)</li>
+ *     <li>Data : n bytes</li>
+ * </ul>
+ * <p>消息包头长度只包括数据内容长度，即：Data length。</p>
+ *
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class NodeServer {
 
     /** logger */

@@ -4,6 +4,10 @@ import java.lang.reflect.Proxy;
 
 /**
  * 远程代理创建工厂
+ * <p>传入Service的接口类，生成对应的Service代理对象。</p>
+ *
+ * @author Ziegler
+ * date 2021/4/12
  */
 public class ReferenceFactory {
 

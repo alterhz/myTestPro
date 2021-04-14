@@ -14,7 +14,12 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-
+/**
+ * 动态代理
+ * <p>创建动态代理的实现类</p>
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class RemoteServiceInvoker<T> implements InvocationHandler {
 
     private final Class<T> type;

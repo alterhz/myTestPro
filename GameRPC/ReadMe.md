@@ -9,19 +9,7 @@
 
 
 ## ServiceNode、ServicePort、Service三者之间的关系
-
-```
-graph TB
-ServiceNode-->ServicePort0
-ServicePort0-->DemoService
-ServicePort0-->GameService
-ServiceNode-->ServicePort1
-ServicePort1-->UnionService
-ServiceNode-->ServicePort2
-ServicePort2-->ActivityService
-ServicePort2-->TeamService
-```
-
+![](ReadMe_files/1.jpg)
 
 ## 使用步骤
 1. 定义Service接口类
@@ -114,7 +102,8 @@ public class InitServiceImpl extends ServiceBase implements InitService {
 ### 相关类
 - ReferenceFactory：动态代理类的创建工厂，用于创建Service的动态代理类的对象。
 - RemoteServiceInvoker：动态代理的调用的实现类，对于生成的代理对象的调用方法，实现函数调用的转发。在这个类中将RPC调用转发到具体的Service实现类。具体的Service可能处于不同的ServicePort（不同的线程），也可能处于不同的ServiceNode（不同的进程）。
-
+- RpcInvocation：rpc调用的相关信息
+- 
 
 
 

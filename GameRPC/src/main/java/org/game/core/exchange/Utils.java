@@ -7,6 +7,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * 编码和解码方法，使用lite-hessian进行编解码
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public class Utils {
 
     /**

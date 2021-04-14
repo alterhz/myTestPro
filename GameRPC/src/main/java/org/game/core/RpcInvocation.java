@@ -1,16 +1,19 @@
 package org.game.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import com.alibaba.com.caucho.hessian.io.Hessian2Input;
-import com.alibaba.com.caucho.hessian.io.Hessian2Output;
-
+/**
+ * rpc调用信息
+ * <p>包括目标调用点信息、发起调用的信息、调用方法和参数等</p>
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public final class RpcInvocation implements Serializable {
+
+    private static final long serialVersionUID = 9104092580669691633L;
 
     /** 调用rpc的线程调用点信息 */
     private FromPoint fromPoint;
@@ -47,31 +50,6 @@ public final class RpcInvocation implements Serializable {
 
     public CallPoint getCallPoint() {
         return callPoint;
-    }
-
-    /**
-     * 编码
-     * @return 用于传输的编码后的数据
-     * @throws IOException 失败
-     */
-    public byte[] encode() throws IOException {
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        final Hessian2Output hessian2Output = new Hessian2Output(bout);
-        hessian2Output.writeObject(this);
-        hessian2Output.flush();
-        return bout.toByteArray();
-    }
-
-    /**
-     * 解码
-     * @param buffer 待解码的字符串
-     * @return 解码成功返回 {@code true}
-     * @throws IOException 失败
-     */
-    public static RpcInvocation decode(byte[] buffer) throws IOException {
-        final ByteArrayInputStream bin = new ByteArrayInputStream(buffer);
-        final Hessian2Input hessian2Input = new Hessian2Input(bin);
-        return (RpcInvocation)hessian2Input.readObject();
     }
 
     public String getMethodName() {

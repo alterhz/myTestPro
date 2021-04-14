@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * RPC请求 {@link Request}等待应答结果，并处理超时。
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public class DefaultFuture extends CompletableFuture<Object> {
 
     private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();

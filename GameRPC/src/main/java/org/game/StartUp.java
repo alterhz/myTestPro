@@ -12,6 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 
+/**
+ * 启动类
+ *
+ * @author Ziegler
+ * date 2021/4/14
+ */
 public class StartUp {
 
     /** logger */
@@ -45,7 +51,7 @@ public class StartUp {
         logger.debug("RPC_ALWAYS_USE_TRANSPORT = {}", ServiceConsts.RPC_ALWAYS_USE_TRANSPORT);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            // 关闭
+            // TODO 关闭还是有问题的，没有处理好
             serviceNode.shutdown();
         }));
 

@@ -1,5 +1,11 @@
 package org.game.core.transport;
 
+/**
+ * 消息包常量
+ *
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class TransportConsts {
 
     /** 单个消息包最大长度 */

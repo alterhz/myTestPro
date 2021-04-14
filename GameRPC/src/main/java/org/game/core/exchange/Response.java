@@ -4,7 +4,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
+/**
+ * rpc请求应答对象
+ * <p>应答数据保存在 {@code result} 中。</p>
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public final class Response implements Serializable {
+
+    private static final long serialVersionUID = 9104092580669691633L;
 
     private Long id;
     private int status = 0;

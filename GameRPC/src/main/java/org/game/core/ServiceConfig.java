@@ -7,6 +7,9 @@ import java.lang.annotation.Target;
 
 /**
  * 服务启动注解
+ *
+ * @author Ziegler
+ * date 2021/4/12
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

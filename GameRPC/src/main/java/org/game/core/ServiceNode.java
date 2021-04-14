@@ -15,6 +15,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * 服务节点
+ * <p>服务节点，对应进程，每个进程对应一个ServiceNode。一个ServiceNode下面可以挂载或管理若干个ServicePort。</p>
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public class ServiceNode {
 
     private final String name;
@@ -60,6 +66,7 @@ public class ServiceNode {
     }
 
     public void shutdown() {
+        executorService.shutdownNow();
         nodeServer.shutdown();
         final Iterator<NodeClient> iterator = nodeClients.values().iterator();
         while (iterator.hasNext()) {
@@ -170,8 +177,6 @@ public class ServiceNode {
             final ServicePort servicePort = iterator.next();
             executorService.execute(servicePort);
         }
-
-
     }
 
     public String getName() {

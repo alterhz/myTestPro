@@ -15,6 +15,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * 服务线程节点
+ * <p>服务线程节点，对应线程，每个线程对应一个ServicePort。一个ServicePort下面可以挂载或管理若干个Service</p>
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public class ServicePort implements Runnable {
 
     /** 所属node */

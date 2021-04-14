@@ -2,6 +2,12 @@ package org.game.core;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Service服务器的基类，处理一部分通用的逻辑。例如：心跳
+ *
+ * @author Ziegler
+ * date 2021/4/12
+ */
 public abstract class ServiceBase implements Service {
 
     private long nextSecondPulse;

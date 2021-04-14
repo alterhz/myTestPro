@@ -8,8 +8,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * RPC调用点信息
+ *
+ * @author Ziegler
+ * date 2021/4/12
  */
 public final class CallPoint implements Serializable {
+
+    private static final long serialVersionUID = 9104092580669691633L;
+
     private final String node;
     private final String port;
     private final String service;

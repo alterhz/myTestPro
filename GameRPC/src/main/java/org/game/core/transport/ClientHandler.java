@@ -9,6 +9,14 @@ import org.game.core.exchange.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * node客户端handler
+ * <p>因为node的客户端 {@link java.nio.channels.Channel} 不需要接收数据，所以无需处理消息。值进行数据派发即可。</p>
+ * <p>客户端可以不要此Handler</p>
+ * @author Ziegler
+ * date 2021/4/13
+ */
+@Deprecated
 public class ClientHandler extends ChannelDuplexHandler {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);

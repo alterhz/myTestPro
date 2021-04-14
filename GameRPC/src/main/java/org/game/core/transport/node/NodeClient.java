@@ -21,6 +21,18 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * node客户端
+ * <p>只发送消息，不接收消息</p>
+ * <h3>消息包结构</h3>
+ * <ul>
+ *     <li>Length : 4 bytes (Length value = n bytes)</li>
+ *     <li>Data : n bytes</li>
+ * </ul>
+ * <p>消息包头长度只包括数据内容长度，即：Data length。</p>
+ * @author Ziegler
+ * date 2021/4/13
+ */
 public class NodeClient {
 
     /** logger */
@@ -50,8 +62,8 @@ public class NodeClient {
                                         0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH,
                                         0, TransportConsts.HEAD_LENGTH_FIELD_LENGTH))
                                 .addLast("hessianCodec", new ExchangeCodec())
-                                .addLast("server-idle-handler", new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS))
-                                .addLast("handler", new ClientHandler());
+                                .addLast("server-idle-handler", new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS));
+//                                .addLast("handler", new ClientHandler());
                     }
                 });
     }
