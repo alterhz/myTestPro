@@ -1,5 +1,8 @@
 package com.magazine.controller;
 
+import com.magazine.constant.RedisConsts;
+import com.magazine.dao.ConfigRepository;
+import com.magazine.dao.SchemaFieldRepository;
 import com.magazine.dao.SheetFilterRepository;
 import com.magazine.dao.SheetRepository;
 import com.magazine.model.Sheet;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/view")
@@ -23,6 +27,12 @@ public class ViewController {
 
     @Autowired
     private SheetFilterRepository sheetFilterRepository;
+
+    @Autowired
+    private SchemaFieldRepository schemaFieldRepository;
+
+    @Autowired
+    private ConfigRepository configRepository;
 
     @Autowired
     private SheetRepository sheetRepository;
@@ -37,10 +47,9 @@ public class ViewController {
         }
 
         final String sheetName = sheetfilter.getSheetName();
-
-        final List<SheetRow> sheetRows = sheetRepository.getRows(sheetName);
-
-        final Sheet resultSheet = Sheet.createSheet(sheetName, sheetRows, sheetfilter);
-        return resultSheet;
+        final List<Map<String, Object>> rows = sheetRepository.getRows(sheetName);
+        final String searchField = configRepository.getConfig(RedisConsts.CONFIG_KEY_SEARCH_FIELD);
+        final Sheet sheet = Sheet.createSheet(sheetName, searchField, rows, sheetfilter);
+        return sheet;
     }
 }

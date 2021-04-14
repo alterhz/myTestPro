@@ -18,7 +18,7 @@ public class SheetRow {
 
     private Long id;
 
-    private List<SheetFieldValue> columns = new ArrayList<>();
+    private List<KeyValue> columns = new ArrayList<>();
 
     public SheetRow() {}
 
@@ -29,8 +29,8 @@ public class SheetRow {
         return sheetRow;
     }
 
-    public void addFieldValue(SheetFieldValue sheetFieldValue) {
-        columns.add(sheetFieldValue);
+    public void addFieldValue(KeyValue keyValue) {
+        columns.add(keyValue);
     }
 
     public String sheetKey() {
@@ -53,11 +53,11 @@ public class SheetRow {
         this.id = id;
     }
 
-    public List<SheetFieldValue> getColumns() {
+    public List<KeyValue> getColumns() {
         return columns;
     }
 
-    public void setColumns(List<SheetFieldValue> values) {
+    public void setColumns(List<KeyValue> values) {
         this.columns = values;
     }
 

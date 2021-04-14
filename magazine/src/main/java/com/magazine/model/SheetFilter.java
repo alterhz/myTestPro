@@ -3,7 +3,9 @@ package com.magazine.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,10 +39,25 @@ public class SheetFilter {
         final SheetRow result = new SheetRow();
         result.setSheetName(sheetRow.getSheetName());
         result.setId(sheetRow.getId());
-        final List<SheetFieldValue> filterColumns = sheetRow.getColumns().stream()
+        final List<KeyValue> filterColumns = sheetRow.getColumns().stream()
                 .filter(sheetFieldValue -> hasField(sheetFieldValue.getKey()) || fields.size() == 0)
                 .collect(Collectors.toList());
         result.setColumns(filterColumns);
+        return result;
+    }
+
+    /**
+     * 过滤字段
+     * @param keyValues
+     * @return
+     */
+    public Map<String, Object> applyFilter(Map<String, Object> keyValues) {
+        Map<String, Object> result = new HashMap<>();
+        keyValues.forEach((k, v) -> {
+            if (hasField(k)) {
+                result.put(k, v);
+            }
+        });
         return result;
     }
 

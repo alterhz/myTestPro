@@ -8,30 +8,30 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Ziegler
  * date 2021/4/12
  */
-public class SheetFieldValue {
+public class KeyValue {
     String key;
     String value;
 
     /**
      * 构造
-     * @return 返回 {@link SheetFieldValue}
+     * @return 返回 {@link KeyValue}
      */
-    public static SheetFieldValue of(String key, String value) {
-        final SheetFieldValue sheetFieldValue = new SheetFieldValue();
-        sheetFieldValue.setKey(key);
-        sheetFieldValue.setValue(value);
-        return sheetFieldValue;
+    public static KeyValue of(String key, String value) {
+        final KeyValue keyValue = new KeyValue();
+        keyValue.setKey(key);
+        keyValue.setValue(value);
+        return keyValue;
     }
 
     /**
      * 构造
-     * @return 返回 {@link SheetFieldValue}
+     * @return 返回 {@link KeyValue}
      */
-    public static SheetFieldValue of(String key, Number value) {
-        final SheetFieldValue sheetFieldValue = new SheetFieldValue();
-        sheetFieldValue.setKey(key);
-        sheetFieldValue.setValue(String.valueOf(value));
-        return sheetFieldValue;
+    public static KeyValue of(String key, Number value) {
+        final KeyValue keyValue = new KeyValue();
+        keyValue.setKey(key);
+        keyValue.setValue(String.valueOf(value));
+        return keyValue;
     }
 
     public String getKey() {

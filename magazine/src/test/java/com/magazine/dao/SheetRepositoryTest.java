@@ -1,7 +1,7 @@
 package com.magazine.dao;
 
 import com.magazine.MagazineApplication;
-import com.magazine.model.SheetFieldValue;
+import com.magazine.model.KeyValue;
 import com.magazine.model.SheetRow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(SpringExtension. class)
 @SpringBootTest(classes = MagazineApplication.class)
@@ -25,33 +27,76 @@ class SheetRepositoryTest {
 
     @Test
     void addRowAndGet() {
-        SheetRow sheetRow = SheetRow.create("test", 1001L);
-        sheetRow.addFieldValue(SheetFieldValue.of("id", 1000L));
-        sheetRow.addFieldValue(SheetFieldValue.of("期刊名称", "上下五千年"));
+        Map<String, Object> keyValues = new HashMap<>();
+        keyValues.put("id", 1000L);
+        keyValues.put("期刊名称", "上下五千年");
+        keyValues.put("类别", "文学");
+        keyValues.put("级别", "中");
+        keyValues.put("网站", "http://www.shangxiawu.com");
 
-        if (sheetRepository.hasRow(sheetRow.sheetKey())) {
-            logger.warn("SheetRow已存在。 sheetRow = {}", sheetRow);
-        }
+        final String sheetKey = "test:" + 1000L;
+        sheetRepository.setRow(sheetKey, keyValues);
 
-        sheetRepository.setRow(sheetRow);
-
-        final SheetRow row = sheetRepository.getRow(sheetRow.sheetKey());
-        if (row != null) {
-            logger.info("row = " + row);
-        }
+        final Map<String, Object> row = sheetRepository.getRow(sheetKey);
+        logger.info("row = " + row);
     }
 
     @Test
     void testGetRows() {
-        for (int i = 0; i < 3; i++) {
-            final long id = 1001L + i;
-            SheetRow sheetRow = SheetRow.create("test", id);
-            sheetRow.addFieldValue(SheetFieldValue.of("id", id));
-            sheetRow.addFieldValue(SheetFieldValue.of("期刊名称", "上下五千年"));
-            sheetRepository.setRow(sheetRow);
+        {
+            Map<String, Object> keyValues = new HashMap<>();
+            final long id = 1001L;
+            keyValues.put("id", id);
+            keyValues.put("期刊名称", "中国魂");
+            keyValues.put("类别", "文学");
+            keyValues.put("级别", "高");
+            keyValues.put("网站", "http://www.china.com");
+
+            final String sheetKey = "test:" + id;
+            sheetRepository.setRow(sheetKey, keyValues);
         }
 
-        final List<SheetRow> rows = sheetRepository.getRows("test");
+        {
+            Map<String, Object> keyValues = new HashMap<>();
+            keyValues.put("id", 1000L);
+            keyValues.put("期刊名称", "上下五千年");
+            keyValues.put("类别", "文学");
+            keyValues.put("级别", "中");
+            keyValues.put("网站", "http://www.shangxiawu.com");
+
+            final String sheetKey = "test:" + 1000L;
+            sheetRepository.setRow(sheetKey, keyValues);
+        }
+
+
+
+        {
+            Map<String, Object> keyValues = new HashMap<>();
+            final long id = 1002L;
+            keyValues.put("id", id);
+            keyValues.put("期刊名称", "高等数学A");
+            keyValues.put("类别", "数学");
+            keyValues.put("级别", "高");
+            keyValues.put("网站", "http://www.math.com");
+
+            final String sheetKey = "test:" + id;
+            sheetRepository.setRow(sheetKey, keyValues);
+        }
+
+        {
+            Map<String, Object> keyValues = new HashMap<>();
+            final long id = 1003L;
+            keyValues.put("id", id);
+            keyValues.put("期刊名称", "高等数学B");
+            keyValues.put("类别", "数学");
+            keyValues.put("级别", "高");
+            keyValues.put("网站", "http://www.mathb.com");
+
+            final String sheetKey = "test:" + id;
+            sheetRepository.setRow(sheetKey, keyValues);
+        }
+
+        final List<Map<String, Object>> rows = sheetRepository.getRows("test");
         rows.forEach(System.out::println);
     }
 }

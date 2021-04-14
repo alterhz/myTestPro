@@ -2,6 +2,7 @@ package com.magazine.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -15,25 +16,30 @@ public class Sheet {
     /** 页签名称 */
     private String sheetName;
 
+    private String searchField;
+
     /** 显示的字段列表 */
     private List<String> fields = new ArrayList<>();
 
-    /** 行数据 */
-    private List<SheetRow> rows = new ArrayList<>();
+    /** keyValue格式数据 */
+    private List<Map<String, Object>> rows;
 
     /**
      * 创建应用过滤器过滤后的 {@link Sheet}
      * @param sheetName 页签名称
-     * @param sheetRows 要处理的行数据
+     * @param SearchField
      * @param sheetFilter 过滤器
      * @return 返回经过过滤后的数据页
      */
-    public static Sheet createSheet(String sheetName, List<SheetRow> sheetRows, SheetFilter sheetFilter) {
+    public static Sheet createSheet(String sheetName, String SearchField, List<Map<String, Object>> rows, SheetFilter sheetFilter) {
         final Sheet sheet = new Sheet();
         sheet.setSheetName(sheetName);
-        final List<SheetRow> filterRows = sheetRows.stream().map(sheetFilter::applySheetRow).collect(Collectors.toList());
+        sheet.setSearchField(SearchField);
+        sheet.fields.addAll(sheetFilter.getFields());
+        final List<Map<String, Object>> filterRows = rows.stream()
+                .map(keyValues -> sheetFilter.applyFilter(keyValues))
+                .collect(Collectors.toList());
         sheet.setRows(filterRows);
-//        sheetRows.forEach(sheetRow -> sheet.addRow(sheetFilter.applySheetRow(sheetRow)));
         return sheet;
     }
 
@@ -59,16 +65,19 @@ public class Sheet {
         this.fields = fields;
     }
 
-    public List<SheetRow> getRows() {
+    public String getSearchField() {
+        return searchField;
+    }
+
+    public void setSearchField(String searchField) {
+        this.searchField = searchField;
+    }
+
+    public List<Map<String, Object>> getRows() {
         return rows;
     }
 
-    public void setRows(List<SheetRow> rows) {
+    public void setRows(List<Map<String, Object>> rows) {
         this.rows = rows;
     }
-
-    public void addRow(SheetRow sheetRow) {
-        rows.add(sheetRow);
-    }
-
 }
