@@ -78,7 +78,8 @@ public class SheetRepository {
 
     /**
      * 添加 {@link SheetRow}
-     * @param sheetRow 行数据
+     * @param sheetKey 主键名称
+     * @param keyValues 行数据
      */
     public void setRow(String sheetKey, Map<String, Object> keyValues) {
         if (redisTemplate.type(sheetKey) != DataType.HASH) {

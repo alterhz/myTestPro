@@ -7,7 +7,6 @@ import com.magazine.dao.SheetFilterRepository;
 import com.magazine.dao.SheetRepository;
 import com.magazine.model.Sheet;
 import com.magazine.model.SheetFilter;
-import com.magazine.model.SheetRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +38,10 @@ public class ViewController {
 
 //    @GetMapping(produces = "application/json")
     @GetMapping()
-    public Sheet view(@RequestParam("filterName") String filterName) {
-        final SheetFilter sheetfilter = sheetFilterRepository.getFilter(filterName);
+    public Sheet view(@RequestParam("filter") String filter) {
+        final SheetFilter sheetfilter = sheetFilterRepository.getFilter(filter);
         if (sheetfilter == null) {
-            logger.error("过滤器错误. filterName = {}", filterName);
+            logger.error("过滤器错误. filter = {}", filter);
             return null;
         }
 

@@ -1,4 +1,4 @@
-package org.game.core.exchange;
+package org.game.core.transport;
 
 import com.alibaba.com.caucho.hessian.io.Hessian2Input;
 import com.alibaba.com.caucho.hessian.io.Hessian2Output;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author Ziegler
  * date 2021/4/12
  */
-public class Utils {
+public class Hessian2Utils {
 
     /**
      * 编码
