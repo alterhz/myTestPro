@@ -46,7 +46,11 @@ axios.get('/view?filter=bookFilter')
         if (responseData.searchField !== undefined && responseData.searchField.length > 0) {
             sortRows.sort(function(a, b) {
                 // {sensitivity: 'base'}
-                return a[responseData.searchField].localeCompare(b[responseData.searchField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                if (a[responseData.searchField] !== undefined && b[responseData.searchField] !== undefined) {
+                    return a[responseData.searchField].localeCompare(b[responseData.searchField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                } else {
+                    return true;
+                }
             });
 
             console.log(sortRows);
