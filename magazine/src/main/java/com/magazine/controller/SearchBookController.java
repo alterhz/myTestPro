@@ -29,7 +29,7 @@ public class SearchBookController {
         final String searchField = ControllerUtils.getConfigSearchField(redisTemplate);
         model.addAttribute("searchField", searchField);
 
-        List<Map> bookList = new ArrayList<>();
+        List<Map<String, Object>> bookList = new ArrayList<>();
         Set keys = redisTemplate.keys("book:*");
 
         for (Object key : keys) {

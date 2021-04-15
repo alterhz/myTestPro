@@ -2,7 +2,11 @@ package com.magazine.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.magazine.constant.RedisConsts;
+import com.magazine.dao.ConfigRepository;
 import com.magazine.dao.RedisSequenceFactory;
+import com.magazine.dao.SchemaFieldRepository;
+import com.magazine.dao.SheetRepository;
+import com.magazine.model.SchemaField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -15,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/bookList")
@@ -26,21 +31,25 @@ public class BookListController {
     @Autowired
     private RedisSequenceFactory redisSequenceFactory;
 
+    @Autowired
+    private ConfigRepository configRepository;
+
+    @Autowired
+    private SheetRepository sheetRepository;
+
+    @Autowired
+    private SchemaFieldRepository schemaFieldRepository;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String bookAll(Model model) {
-        final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
+        final List<SchemaField> schemaFields = schemaFieldRepository.getSchemaFields(RedisConsts.BOOK_SCHEMA_KEY);
+        final List<String> fields = schemaFields.stream().map(schemaField -> schemaField.getField()).collect(Collectors.toList());
         model.addAttribute("fields", fields);
 
-        final String searchField = ControllerUtils.getConfigSearchField(redisTemplate);
+        final String searchField = configRepository.getConfig(RedisConsts.CONFIG_KEY_SEARCH_FIELD);
         model.addAttribute("searchField", searchField);
 
-        List<Map> bookList = new ArrayList<>();
-        Set keys = redisTemplate.keys("book:*");
-        for (Object key : keys) {
-            final Map keyValues = (Map)redisTemplate.opsForValue().get(key);
-            bookList.add(keyValues);
-        }
-
+        final List<Map<String, Object>> bookList = sheetRepository.getRows("book");
         ControllerUtils.sortByField(bookList, searchField);
 
         model.addAttribute("books", bookList);

@@ -17,7 +17,7 @@ public class ControllerUtils {
      * @param bookList 要排序的数据
      * @param searchField 排序字段
      */
-    public static void sortByField(List<Map> bookList, String searchField) {
+    public static void sortByField(List<Map<String, Object>> bookList, String searchField) {
         final Collator collator = Collator.getInstance(Locale.CHINA);
         Collections.sort(bookList, (o1, o2) -> collator.compare(o1.getOrDefault(searchField, ""), o2.getOrDefault(searchField, "")));
     }
