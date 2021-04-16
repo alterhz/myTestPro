@@ -10,10 +10,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension. class)
 @SpringBootTest(classes = MagazineApplication.class)
-class SheetFilterRepositoryTest {
+class FilterRepositoryTest {
     public static final String BOOK_FILTER = "bookFilter";
     @Autowired
-    private SheetFilterRepository sheetFilterRepository;
+    private FilterRepository filterRepository;
 
     @Test
     void setAndGetFilter() {
@@ -25,9 +25,9 @@ class SheetFilterRepositoryTest {
         sheetFilter.addField("类别");
         sheetFilter.addField("级别");
         sheetFilter.addField("网站");
-        sheetFilterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
+        filterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
 
-        final SheetFilter filter = sheetFilterRepository.getFilter(BOOK_FILTER);
+        final SheetFilter filter = filterRepository.getFilter(BOOK_FILTER);
         System.out.println("filter = " + filter);
     }
 
@@ -36,9 +36,9 @@ class SheetFilterRepositoryTest {
         final SheetFilter sheetFilter = new SheetFilter();
         sheetFilter.setFilterName(BOOK_FILTER);
         sheetFilter.setSheetName("book");
-        sheetFilterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
+        filterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
 
-        final SheetFilter filter = sheetFilterRepository.getFilter(BOOK_FILTER);
+        final SheetFilter filter = filterRepository.getFilter(BOOK_FILTER);
         System.out.println("filter = " + filter);
     }
 }

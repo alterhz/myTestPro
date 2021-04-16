@@ -1,18 +1,14 @@
 package com.magazine;
 
-import com.magazine.dao.SheetFilterRepository;
+import com.magazine.dao.FilterRepository;
 import com.magazine.model.SheetFilter;
-import com.magazine.model.SheetRow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.concurrent.TimeUnit;
 
 
 @ExtendWith(SpringExtension. class)
@@ -26,15 +22,15 @@ public class TestRedis {
     private RedisTemplate redisTemplate;
 
     @Autowired
-    private SheetFilterRepository sheetFilterRepository;
+    private FilterRepository filterRepository;
 
     @Test
     public void testView() {
         final SheetFilter sheetFilter = new SheetFilter();
         sheetFilter.setSheetName("bookFilter");
-        sheetFilterRepository.setFilter("bookFilter", sheetFilter);
+        filterRepository.setFilter("bookFilter", sheetFilter);
 
-        final SheetFilter filter = sheetFilterRepository.getFilter(sheetFilter.getSheetName());
+        final SheetFilter filter = filterRepository.getFilter(sheetFilter.getSheetName());
         System.out.println("filter = " + filter);
     }
 

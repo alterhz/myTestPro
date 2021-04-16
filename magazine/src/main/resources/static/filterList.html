@@ -72,24 +72,14 @@
     </nav>
 
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-      <h1>配置</h1>
-      <div class="alert alert-success" role="alert" th:if="${msg}" th:text="${msg}">您有新的消息！</div>
-      <h2>Book表字段列表</h2>
-      <form method="post" class="form-inline" th:action="@{/config/saveSchema}">
-        <div class="form-group" th:each = "i:${#numbers.sequence(0,19)}">
-          <input type="text" class="form-control" name="fields" th:value="${#lists.size(fields) > i} ? *{fields[i]} : ''" th:placeholder="'字段名称' + *{i+1}">
-        </div>
-        <button type="submit" class="btn btn-primary">更新</button>
-      </form>
+      <!--  内容  -->
+      <ul id="filter">
+        <li v-for="filter in filters" :key="filter.filterName">
+          {{ filter.filterName }}, {{ filter.sheetName }}
 
-      <h2>搜索字段</h2>
-      <form method="post" class="form-inline" th:action="@{/config/saveConfig}">
-        <div class="form-group">
-          <label for="searchField">搜索字段名称</label>
-          <input type="text" class="form-control" id="searchField" name = "searchField" th:value="*{searchField}" placeholder="搜索字段名称">
-        </div>
-        <button type="submit" class="btn btn-primary">保存</button>
-      </form>
+          <span v-for="field in filter.fields" :key="field">{{ field }}</span>
+        </li>
+      </ul>
     </main>
   </div>
 </div>
@@ -99,5 +89,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="/js/dashboard.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/js/filterList.js"></script>
   </body>
 </html>

@@ -23,8 +23,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/bookList/**").authenticated()
-                .antMatchers("/bookSchema/**").authenticated()
-                .antMatchers("/bookConfig/**").authenticated()
+                .antMatchers("/filter/**").authenticated()
+                .antMatchers("/config/**").authenticated()
                 .anyRequest().permitAll()
 
                 .and()

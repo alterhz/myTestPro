@@ -3,7 +3,7 @@ package com.magazine.controller;
 import com.magazine.constant.RedisConsts;
 import com.magazine.dao.ConfigRepository;
 import com.magazine.dao.SchemaFieldRepository;
-import com.magazine.dao.SheetFilterRepository;
+import com.magazine.dao.FilterRepository;
 import com.magazine.dao.SheetRepository;
 import com.magazine.model.Sheet;
 import com.magazine.model.SheetFilter;
@@ -25,7 +25,7 @@ public class ViewController {
     private static final Logger logger = LoggerFactory.getLogger(ViewController.class);
 
     @Autowired
-    private SheetFilterRepository sheetFilterRepository;
+    private FilterRepository filterRepository;
 
     @Autowired
     private SchemaFieldRepository schemaFieldRepository;
@@ -39,7 +39,7 @@ public class ViewController {
 //    @GetMapping(produces = "application/json")
     @GetMapping()
     public Sheet view(@RequestParam("filter") String filter) {
-        final SheetFilter sheetfilter = sheetFilterRepository.getFilter(filter);
+        final SheetFilter sheetfilter = filterRepository.getFilter(filter);
         if (sheetfilter == null) {
             logger.error("过滤器错误. filter = {}", filter);
             return null;
@@ -51,4 +51,5 @@ public class ViewController {
         final Sheet sheet = Sheet.createSheet(sheetName, searchField, rows, sheetfilter);
         return sheet;
     }
+
 }

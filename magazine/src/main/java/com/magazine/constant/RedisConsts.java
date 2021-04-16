@@ -12,4 +12,7 @@ public class RedisConsts {
     public static final String CONFIG_KEY = "config";
     /** 配置搜索字段 */
     public static final String CONFIG_KEY_SEARCH_FIELD = "searchField";
+
+    /** 过滤器前缀 */
+    public static final String FITLER_PRXFIX = "filter:";
 }
