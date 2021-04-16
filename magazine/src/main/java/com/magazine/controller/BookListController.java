@@ -6,7 +6,6 @@ import com.magazine.dao.ConfigRepository;
 import com.magazine.dao.RedisSequenceFactory;
 import com.magazine.dao.SchemaFieldRepository;
 import com.magazine.dao.SheetRepository;
-import com.magazine.model.SchemaField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -15,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/bookList")
@@ -42,9 +38,8 @@ public class BookListController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String bookAll(Model model) {
-        final List<SchemaField> schemaFields = schemaFieldRepository.getSchemaFields(RedisConsts.BOOK_SCHEMA_KEY);
-        final List<String> fields = schemaFields.stream().map(schemaField -> schemaField.getField()).collect(Collectors.toList());
-        model.addAttribute("fields", fields);
+        final List<String> schemaFields = schemaFieldRepository.getSchemaFields();
+        model.addAttribute("fields", schemaFields);
 
         final String searchField = configRepository.getConfig(RedisConsts.CONFIG_KEY_SEARCH_FIELD);
         model.addAttribute("searchField", searchField);
@@ -57,7 +52,7 @@ public class BookListController {
     }
 
     @RequestMapping(value = "/add", method=RequestMethod.POST)
-    public String addBook(@RequestParam() Map keyValue) throws JsonProcessingException {
+    public String addOrUpdateBook(@RequestParam() Map keyValue) {
         final String id;
         if (keyValue.containsKey(RedisConsts.ID)) {
             id = (String)keyValue.get(RedisConsts.ID);
@@ -66,30 +61,25 @@ public class BookListController {
             id = String.valueOf(genID);
             keyValue.put(RedisConsts.ID, id);
         }
-        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
-        redisTemplate.opsForValue().set(key, keyValue);
+        String key = RedisConsts.BOOK_VALUE_KEY_PREFIX + id;
+        sheetRepository.setRow(key, keyValue);
         return "redirect:/bookList/";
     }
 
     @RequestMapping(value = "/edit", method=RequestMethod.GET)
     public String edit(@RequestParam("id") String id, Model model) {
-        final List<String> fields = ControllerUtils.getBookSchemaFields(redisTemplate);
-        model.addAttribute("fields", fields);
+        final List<String> schemaFields = schemaFieldRepository.getSchemaFields();
+        model.addAttribute("fields", schemaFields);
 
-        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
-        final Object book = redisTemplate.opsForValue().get(key);
-        if (book == null) {
-            System.out.println("edit book is null. key = " + key);
-            return "error";
-        } else {
-            model.addAttribute("book", book);
-        }
+        String key = RedisConsts.BOOK_VALUE_KEY_PREFIX + id;
+        final Map<String, Object> row = sheetRepository.getRow(key);
+        model.addAttribute("book", row);
         return "edit";
     }
 
     @RequestMapping(value = "/del", method=RequestMethod.GET)
-    public String del(@RequestParam("id") String id, Model model) {
-        String key = RedisConsts.BOOK_VALUE_KEY_PRXFIX + id;
+    public String delete(@RequestParam("id") String id, Model model) {
+        String key = RedisConsts.BOOK_VALUE_KEY_PREFIX + id;
         final Boolean delete = redisTemplate.delete(key);
         if (delete) {
             model.addAttribute("msg", "删除成功！");

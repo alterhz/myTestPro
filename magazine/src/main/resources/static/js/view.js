@@ -34,13 +34,10 @@ var sortRows;
 axios.get('/view?filter=bookFilter')
     .then(function(response) {
         console.log(response);
-        console.log(response.data);
         responseData = response.data;
 
         mySheet.fields = responseData.fields;
 
-        console.log('responseData.searchField = ' + responseData.searchField);
-        console.log(responseData.rows);
         // 按照搜索键进行排序
         sortRows = responseData.rows.concat();
         if (responseData.searchField !== undefined && responseData.searchField.length > 0) {
@@ -53,23 +50,43 @@ axios.get('/view?filter=bookFilter')
                 }
             });
 
-            console.log(sortRows);
+            console.debug(sortRows);
         }
 
         // 只需要做一次替换
         sortRows.forEach(row => {
            for (var key in row) {
                var url = row[key];
-               console.log(url);
                if (url.indexOf('http') !== -1) {
-                   row[key] = '<a href="' + url + '" target="_blank">' + url + '</a>';
-                   console.log("replace" + url);
+                   row[key] = '<a href="' + url + '" target="_blank">' + url + '</a> <button class="btn badge" data-clipboard-text="' + url + '">复制</button>';
+                   console.debug("replace" + url);
                }
            }
         });
 
         mySheet.rows = sortRows;
+
+        runClipboard();
     })
     .catch(function(error) {
         console.log(error);
     });
+
+    function runClipboard() {
+        var clipboard = new ClipboardJS('.btn');
+
+        clipboard.on('success', function(e) {
+            console.debug('Action:', e.action);
+            console.debug('Text:', e.text);
+            console.debug('Trigger:', e.trigger);
+
+            e.clearSelection();
+
+            alert("网址[" + e.text + "]已复制到剪切板");
+        });
+
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+        });
+    }

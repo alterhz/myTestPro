@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class SchemaFieldRepository {
@@ -51,6 +52,17 @@ public class SchemaFieldRepository {
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * 这个方法之后需要去掉
+     * @return
+     */
+    @Deprecated
+    public List<String> getSchemaFields() {
+        final List<SchemaField> schemaFields = getSchemaFields(RedisConsts.BOOK_SCHEMA_KEY);
+        final List<String> fields = schemaFields.stream().map(schemaField -> schemaField.getField()).collect(Collectors.toList());
+        return fields;
     }
 
     /**

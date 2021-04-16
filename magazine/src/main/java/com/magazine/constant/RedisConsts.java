@@ -5,7 +5,7 @@ public class RedisConsts {
     /** ID */
     public static final String ID = "id";
     /** 图书数据表前缀 */
-    public static final String BOOK_VALUE_KEY_PRXFIX = "book:";
+    public static final String BOOK_VALUE_KEY_PREFIX = "book:";
     /** 图书字段表前缀 */
     public static final String BOOK_SCHEMA_KEY = "bookSchema";
     /** 配置数据 */
