@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import org.game.core.exchange.Request;
 import org.game.core.exchange.Response;
-import org.game.core.exchange.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +44,12 @@ public class ExchangeCodec extends ByteToMessageCodec {
         } else if (msg instanceof Request) {
             final Request request = (Request) msg;
             out.writeByte(FLAG_REQUEST);
-            final byte[] encode = Utils.encode(request);
+            final byte[] encode = Hessian2Utils.encode(request);
             out.writeBytes(encode);
         } else if (msg instanceof Response) {
             final Response response = (Response) msg;
             out.writeByte(FLAG_RESPONSE);
-            final byte[] encode = Utils.encode(response);
+            final byte[] encode = Hessian2Utils.encode(response);
             out.writeBytes(encode);
         }
     }
@@ -67,13 +66,13 @@ public class ExchangeCodec extends ByteToMessageCodec {
         } else if (flag == FLAG_REQUEST) {
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
-            final Request request = Utils.decode(buffer);
+            final Request request = Hessian2Utils.decode(buffer);
             out.add(request);
             logger.debug("接收到消息包长度。length = {}, request.id = {}", length, request.getId());
         } else if (flag == FLAG_RESPONSE) {
             byte[] buffer = new byte[length];
             in.readBytes(buffer);
-            final Response response = Utils.decode(buffer);
+            final Response response = Hessian2Utils.decode(buffer);
             out.add(response);
             logger.debug("接收到消息包长度。length = {}, response.id = {}", length, response.getId());
         }

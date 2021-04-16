@@ -12,7 +12,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.game.core.transport.ClientHandler;
 import org.game.core.transport.ExchangeCodec;
 import org.game.core.transport.TransportConsts;
 import org.slf4j.Logger;
