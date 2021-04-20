@@ -21,8 +21,6 @@ axios.get('/filters')
         }
 
         myFilter.filters = responseData;
-
-
     })
     .catch(function(error) {
         console.log(error);

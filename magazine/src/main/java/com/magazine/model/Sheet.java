@@ -35,7 +35,10 @@ public class Sheet {
         final Sheet sheet = new Sheet();
         sheet.setSheetName(sheetName);
         sheet.setSearchField(SearchField);
-        sheet.fields.addAll(sheetFilter.getFields());
+        final List<String> fields = sheetFilter.getFields().stream()
+                .map(ShowField::getField)
+                .collect(Collectors.toList());
+        sheet.fields.addAll(fields);
         final List<Map<String, Object>> filterRows = rows.stream()
                 .map(keyValues -> sheetFilter.applyFilter(keyValues))
                 .collect(Collectors.toList());

@@ -2,6 +2,7 @@ package com.magazine.dao;
 
 import com.magazine.MagazineApplication;
 import com.magazine.model.SheetFilter;
+import com.magazine.model.ShowField;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,25 @@ class FilterRepositoryTest {
         final SheetFilter sheetFilter = new SheetFilter();
         sheetFilter.setFilterName(BOOK_FILTER);
         sheetFilter.setSheetName("book");
-        sheetFilter.addField("id");
-        sheetFilter.addField("期刊名称");
-        sheetFilter.addField("类别");
-        sheetFilter.addField("级别");
-        sheetFilter.addField("网站");
+        sheetFilter.addField(ShowField.of("id", 0));
+        sheetFilter.addField(ShowField.of("期刊名称", 0));
+        sheetFilter.addField(ShowField.of("类别", 0));
+        sheetFilter.addField(ShowField.of("级别", 0));
+        sheetFilter.addField(ShowField.of("网站", 0));
+        filterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
+
+        final SheetFilter filter = filterRepository.getFilter(BOOK_FILTER);
+        System.out.println("filter = " + filter);
+    }
+
+    @Test
+    void setAndGetFilter2() {
+        final SheetFilter sheetFilter = new SheetFilter();
+        sheetFilter.setFilterName("filter2");
+        sheetFilter.setSheetName("book");
+        sheetFilter.addField(ShowField.of("id", 0));
+        sheetFilter.addField(ShowField.of("期刊名称", 0));
+        sheetFilter.addField(ShowField.of("类别", 0));
         filterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
 
         final SheetFilter filter = filterRepository.getFilter(BOOK_FILTER);

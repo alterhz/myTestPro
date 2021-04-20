@@ -21,7 +21,7 @@ public class SheetFilter {
     /** 绑定的表名称 */
     private String sheetName;
     /** 过滤的列 */
-    private List<String> fields = new ArrayList<>();
+    private List<ShowField> fields = new ArrayList<>();
 
     public SheetFilter() {
 
@@ -67,7 +67,7 @@ public class SheetFilter {
      * @return
      */
     private boolean hasField(String fieldKey) {
-        return fields.stream().anyMatch(s -> s.equals(fieldKey));
+        return fields.stream().anyMatch(s -> s.getField().equals(fieldKey));
     }
 
     public String getFilterName() {
@@ -86,16 +86,16 @@ public class SheetFilter {
         this.sheetName = sheetName;
     }
 
-    public void setFields(List<String> fields) {
-        this.fields = fields;
-    }
-
-    public List<String> getFields() {
+    public List<ShowField> getFields() {
         return fields;
     }
 
-    public void addField(String fieldName) {
-        fields.add(fieldName);
+    public void setFields(List<ShowField> fields) {
+        this.fields = fields;
+    }
+
+    public void addField(ShowField showField) {
+        this.fields.add(showField);
     }
 
     @Override
