@@ -21,24 +21,30 @@ var myFilter = new Vue({
             method:'delete',
             url: '/filters/' + filterName,
         });
+        for (var i=0; i<myFields.length; ++i) {
+            if (myFields[i].filterName == filterName) {
+                myFields.splice(i, 1);
+                console.debug("删除元素" + myFields[i]);
+            }
+        }
     }
   }
 });
 
-var responseData;
+var myFields;
 
 axios.get('/filters')
     .then(function(response) {
         console.log(response);
-        responseData = response.data;
+        myFields = response.data;
 
         // 处理filters.给每个filter添加addField字段
-        for (var key in responseData) {
-            console.log(responseData[key].sheetName);
-            responseData[key].addField = "empty";
-        }
+//        for (var key in myFields) {
+//            console.log(myFields[key].sheetName);
+//            myFields[key].addField = "empty";
+//        }
 
-        myFilter.filters = responseData;
+        myFilter.filters = myFields;
     })
     .catch(function(error) {
         console.log(error);

@@ -12,7 +12,7 @@ var mySearch = new Vue({
                 mySheet.rows = filterRows;
                 console.log('show directly.');
             } else {
-                var rs = filterRows.filter(row => row[responseData.searchField].indexOf(this.searchText) !== -1);
+                var rs = filterRows.filter(row => row[myFields.searchField].indexOf(this.searchText) !== -1);
                 mySheet.rows = rs;
             }
         }
@@ -28,23 +28,23 @@ var mySheet = new Vue({
 });
 
 // 原始数据
-var responseData;
+var myFields;
 var sortRows;
 
 axios.get('/view?filter=bookFilter')
     .then(function(response) {
         console.log(response);
-        responseData = response.data;
+        myFields = response.data;
 
-        mySheet.fields = responseData.fields;
+        mySheet.fields = myFields.fields;
 
         // 按照搜索键进行排序
-        sortRows = responseData.rows.concat();
-        if (responseData.searchField !== undefined && responseData.searchField.length > 0) {
+        sortRows = myFields.rows.concat();
+        if (myFields.searchField !== undefined && myFields.searchField.length > 0) {
             sortRows.sort(function(a, b) {
                 // {sensitivity: 'base'}
-                if (a[responseData.searchField] !== undefined && b[responseData.searchField] !== undefined) {
-                    return a[responseData.searchField].localeCompare(b[responseData.searchField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                if (a[myFields.searchField] !== undefined && b[myFields.searchField] !== undefined) {
+                    return a[myFields.searchField].localeCompare(b[myFields.searchField], 'zh-Hans-CN', {sensitivity: 'accent'});
                 } else {
                     return true;
                 }
