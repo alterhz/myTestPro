@@ -21,6 +21,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // 启用csrf这个会导致rest的post请求失败，返回403错误
+        http.cors().and().csrf().disable();
+
         http.authorizeRequests()
                 .antMatchers("/bookList/**").authenticated()
                 .antMatchers("/filter/**").authenticated()
@@ -36,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .rememberMe()
                     .tokenValiditySeconds(2419200)
                     .key("BookSecured");
+
     }
 
     @Override

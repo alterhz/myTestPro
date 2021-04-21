@@ -4,6 +4,24 @@ var myFilter = new Vue({
   el: '#filter',
   data: {
     filters: []
+  },
+  methods: {
+    save: function(filter) {
+        console.log(filter);
+        axios({
+            method:'post',
+            url: '/filters',
+            data: filter,
+            headers: {'Content-Type': "application/json"},
+        });
+    },
+    del: function(filterName) {
+        console.log(filterName);
+        axios({
+            method:'delete',
+            url: '/filters/' + filterName,
+        });
+    }
   }
 });
 

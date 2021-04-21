@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/filters")
+@RequestMapping(value = "/filters")
 public class FilterController {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(FilterController.class);
@@ -41,7 +41,7 @@ public class FilterController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<SheetFilter> save(SheetFilter sheetFilter) {
+    public ResponseEntity<SheetFilter> save(@RequestBody SheetFilter sheetFilter) {
         filterRepository.setFilter(sheetFilter.getFilterName(), sheetFilter);
         return new ResponseEntity<>(HttpStatus.OK);
     }
