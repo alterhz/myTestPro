@@ -81,6 +81,7 @@
         <div class="row" v-for="filter in filters" :key="filter.filterName">
           <div class="col-sm-12">
             <div class="alert alert-success" role="alert">
+
               <div class="form-inline">
                 <div class="form-group">
                   <label for="filter-name">过滤器名称：</label>
@@ -105,7 +106,13 @@
                   <tbody>
                     <tr v-for="(field, index) in filter.fields">
                       <th scope="row">{{index}}</th>
-                      <td><input class="form-control" v-model="field.field"></td>
+                      <td>
+<!--                        <input class="form-control" v-model="field.field">-->
+                        <select class="form-control" v-model="field.field">
+                          <option>{{field.field}}</option>
+                          <option v-for="name in schema" v-if="name != undefined && name.length > 0 && name != field.field">{{name}}</option>
+                        </select>
+                      </td>
                       <td><input class="form-control" v-model="field.order"></td>
                       <td><button class="btn btn-danger btn-xs" @click="filter.fields.splice(index, 1)">删除</button></td>
                     </tr>
@@ -114,18 +121,20 @@
                     <td></td>
                     <td></td>
                     <td>
-                      <button class="btn btn-success btn-xs" @click="filter.fields.push({field:'', order:0})">添加</button>
+                      <button class="btn btn-success btn-xs" @click="filter.fields.push({field:'id', order:999})">添加</button>
 
                     </td>
                   </tr>
                   </tbody>
                 </table>
-                <div>
-                  <button class="btn btn-success btn-xs" @click="save(filter)">保存</button>
-                  <button class="btn btn-success btn-xs" @click="del(filter.filterName)">删除</button>
-                </div>
               </div>
-
+              <div class="row">
+                <div class="col-sm-5">
+                  <button class="btn btn-success btn-xs" @click="save(filter)">保存</button>
+                  <a :href="'/view.html?filter=' + filter.filterName" target="_blank" class="btn btn-primary">进入搜索页</a>
+                </div>
+                <div class="col-sm-2"><button class="btn btn-danger btn-xs" @click="del(filter.filterName)">删除当前过滤器</button></div>
+              </div>
             </div>
           </div>
         </div>

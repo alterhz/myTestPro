@@ -31,7 +31,14 @@ var mySheet = new Vue({
 var myFields;
 var sortRows;
 
-axios.get('/view?filter=bookFilter')
+function getQueryString(name) {
+  let reg = `(^|&)${name}=([^&]*)(&|$)`
+  let r = window.location.search.substr(1).match(reg);
+  if (r != null) return unescape(r[2]); return null;
+}
+var filter = getQueryString("filter");
+console.log(filter);
+axios.get('/view?filter=' + filter)
     .then(function(response) {
         console.log(response);
         myFields = response.data;

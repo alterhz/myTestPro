@@ -3,7 +3,8 @@
 var myFilter = new Vue({
   el: '#filter',
   data: {
-    filters: []
+    filters: [],
+    schema: [],
   },
   methods: {
     save: function(filter) {
@@ -14,6 +15,7 @@ var myFilter = new Vue({
             data: filter,
             headers: {'Content-Type': "application/json"},
         });
+        sortMyFields();
     },
     del: function(filterName) {
         console.log(filterName);
@@ -38,14 +40,33 @@ axios.get('/filters')
         console.log(response);
         myFields = response.data;
 
-        // 处理filters.给每个filter添加addField字段
-//        for (var key in myFields) {
-//            console.log(myFields[key].sheetName);
-//            myFields[key].addField = "empty";
-//        }
-
         myFilter.filters = myFields;
+        sortMyFields();
     })
     .catch(function(error) {
         console.log(error);
     });
+
+function sortMyFields() {
+    for (var key in myFields) {
+        myFields[key].fields.sort((a, b) => { return a.order - b.order; });
+    }
+
+    getSchema();
+}
+
+function getSchema() {
+    for (var key in myFields) {
+        var filterName = myFields[key].filterName;
+        console.log('filterName = ' + filterName);
+        axios.get('/view/fields')
+            .then(response => {
+                console.log(response);
+                myFilter.schema = response.data;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+}

@@ -52,4 +52,10 @@ public class ViewController {
         return sheet;
     }
 
+    @GetMapping("/fields")
+    public List<String> getFields() {
+        final List<String> schemaFields = schemaFieldRepository.getSchemaFields();
+        return schemaFields;
+    }
+
 }
