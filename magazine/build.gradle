@@ -5,8 +5,7 @@ plugins {
 }
 
 group = 'com.magazine'
-version = '1.2.8-SNAPSHOT'
-sourceCompatibility = '11'
+version = '2.0.1-SNAPSHOT'
 
 allprojects {
 	repositories {

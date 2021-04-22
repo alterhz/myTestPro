@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,8 @@ public class SchemaFieldRepository {
     @Deprecated
     public List<String> getSchemaFields() {
         final List<SchemaField> schemaFields = getSchemaFields(RedisConsts.BOOK_SCHEMA_KEY);
+        // 排序
+        schemaFields.sort(Comparator.comparingInt(SchemaField::getOrder));
         final List<String> fields = schemaFields.stream().map(schemaField -> schemaField.getField()).collect(Collectors.toList());
         return fields;
     }

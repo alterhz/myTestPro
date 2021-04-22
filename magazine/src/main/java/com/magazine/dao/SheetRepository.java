@@ -68,6 +68,15 @@ public class SheetRepository {
     }
 
     /**
+     * 获取所有主键
+     * @param sheetName 页签名称
+     * @return 所有主键页签名称列表
+     */
+    public Set<String> getKeys(String sheetName) {
+        return (Set<String>) redisTemplate.keys(sheetName + ":*");
+    }
+
+    /**
      * 是否存在sheet行数据
      * @param sheetKey 行数据键名称
      * @return 存在返回 {@code true}

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <title>表格数据管理中心 v1.0</title>
+    <title>过滤器管理 —— 表格数据管理中心 v1.0</title>
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -56,7 +56,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/filterList.html">
+            <a class="nav-link active" href="/admin/filters">
               <span data-feather="shopping-cart"></span>
               搜索页
             </a>
@@ -81,8 +81,14 @@
         <div class="row" v-for="filter in filters" :key="filter.filterName">
           <div class="col-sm-12">
             <div class="alert alert-success" role="alert">
-
-              <div class="form-inline">
+              <div class="row" style="margin:5px">
+                <div class="col-sm-5">
+                  <button class="btn btn-success btn-xs" @click="save(filter)">保存</button>
+                  <a :href="'/view.html?filter=' + filter.filterName" target="_blank" class="btn btn-primary">进入搜索页</a>
+                </div>
+                <div class="col-sm-2"><button class="btn btn-danger btn-xs" @click="del(filter.filterName)">删除当前过滤器</button></div>
+              </div>
+              <div class="form-inline" style="margin:5px">
                 <div class="form-group">
                   <label for="filter-name">过滤器名称：</label>
                   <input id="filter-name" class="form-control" v-model="filter.filterName">
@@ -92,7 +98,6 @@
                   <input id="sheet-name" class="form-control" v-model="filter.sheetName">
                 </div>
               </div>
-              <br/>
               <div class="col-sm-6" >
                 <table class="table table-bordered" style="background:#fff">
                   <thead>
@@ -128,13 +133,7 @@
                   </tbody>
                 </table>
               </div>
-              <div class="row">
-                <div class="col-sm-5">
-                  <button class="btn btn-success btn-xs" @click="save(filter)">保存</button>
-                  <a :href="'/view.html?filter=' + filter.filterName" target="_blank" class="btn btn-primary">进入搜索页</a>
-                </div>
-                <div class="col-sm-2"><button class="btn btn-danger btn-xs" @click="del(filter.filterName)">删除当前过滤器</button></div>
-              </div>
+
             </div>
           </div>
         </div>
