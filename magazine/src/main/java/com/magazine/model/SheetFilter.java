@@ -2,10 +2,7 @@ package com.magazine.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +22,16 @@ public class SheetFilter {
 
     public SheetFilter() {
 
+    }
+
+    /**
+     * 根据order排序后的的字段列表
+     */
+    public List<String> getSortFields() {
+        fields.sort(Comparator.comparingInt(ShowField::getOrder));
+        return fields.stream()
+                .map(ShowField::getField)
+                .collect(Collectors.toList());
     }
 
     /**
