@@ -1,6 +1,7 @@
 package com.magazine.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class Sheet {
     private String searchField;
 
     /** 显示的字段列表 */
-    private List<String> fields = new ArrayList<>();
+    private List<ShowField> fields = new ArrayList<>();
 
     /** keyValue格式数据 */
     private List<Map<String, Object>> rows;
@@ -35,7 +36,9 @@ public class Sheet {
         final Sheet sheet = new Sheet();
         sheet.setSheetName(sheetName);
         sheet.setSearchField(SearchField);
-        sheet.fields.addAll(sheetFilter.getSortFields());
+        sheet.fields.addAll(sheetFilter.getFields());
+        // 按照order排序
+        sheet.fields.sort(Comparator.comparingInt(ShowField::getOrder));
         final List<Map<String, Object>> filterRows = rows.stream()
                 .map(keyValues -> sheetFilter.applyFilter(keyValues))
                 .collect(Collectors.toList());
@@ -57,11 +60,11 @@ public class Sheet {
         this.sheetName = sheetName;
     }
 
-    public List<String> getFields() {
+    public List<ShowField> getFields() {
         return fields;
     }
 
-    public void setFields(List<String> fields) {
+    public void setFields(List<ShowField> fields) {
         this.fields = fields;
     }
 

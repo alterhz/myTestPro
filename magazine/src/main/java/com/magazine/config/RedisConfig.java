@@ -3,14 +3,20 @@ package com.magazine.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
 
 /**
  * @author janti
@@ -22,14 +28,15 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     /**
      * 选择redis作为默认缓存工具
-     * @param redisTemplate
-     * @return
      */
-//    @Bean
-//    public CacheManager cacheManager(RedisTemplate redisTemplate) {
-//        RedisCacheManager rcm = new RedisCacheManager(redisTemplate);
-//        return rcm;
-//    }
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1)); // 设置缓存有效期一小时
+        return RedisCacheManager
+                .builder(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory))
+                .cacheDefaults(redisCacheConfiguration).build();
+    }
 
     /**
      * retemplate相关配置

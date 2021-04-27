@@ -21,8 +21,8 @@ import java.util.Set;
 /**
  *
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = MagazineApplication.class)
+//@ExtendWith(SpringExtension.class)
+//@SpringBootTest(classes = MagazineApplication.class)
 public class book {
 
     public static final String BOOK_FILE_NAME = "books.txt";

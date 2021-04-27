@@ -11,8 +11,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
-@ExtendWith(SpringExtension. class)
-@SpringBootTest(classes = MagazineApplication.class)
+//@ExtendWith(SpringExtension. class)
+//@SpringBootTest(classes = MagazineApplication.class)
 public class TestRedis {
 
     @Autowired

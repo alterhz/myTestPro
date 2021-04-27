@@ -13,8 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Map;
 import java.util.Set;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = MagazineApplication.class)
+//@ExtendWith(SpringExtension.class)
+//@SpringBootTest(classes = MagazineApplication.class)
 public class BookConvert {
 
     /** logger */

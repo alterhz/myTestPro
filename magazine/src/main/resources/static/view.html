@@ -29,9 +29,9 @@
                 </span>
             </div><!-- /input-group -->
             <div v-if="showMore">
-                <div class="input-group form-inline" v-for="field in fields" :key="field">
-                    <div class="input-group-addon">{{field}}</div>
-                    <input type="text" class="form-control" v-model="keys[field]" @keyup.enter="search">
+                <div class="input-group form-inline" v-for="field in fields" :key="field" v-if="field.searchKey == true">
+                    <div class="input-group-addon">{{field.field}}</div>
+                    <input type="text" class="form-control" v-model="keys[field.field]" @keyup.enter="search">
                 </div>
             </div>
         </div><!-- /.col-lg-6 -->
@@ -40,10 +40,10 @@
     <div class="container" style="margin-bottom:100px">
         <div>
             <ul class="list-inline bg-info" v-for="row in rows" :key="row.id">
-                <li v-for="field in fields" :key="field">
-                    <h3 v-if="row[field] !== undefined && row[field].length > 0">
-                        <span>{{ field }} : </span>
-                        <span class="label-info bookFieldValue"><span v-html="row[field]"></span></span>
+                <li v-for="field in fields" :key="field.field">
+                    <h3 v-if="row[field.field] !== undefined && row[field.field].length > 0">
+                        <span>{{ field.field }} : </span>
+                        <span class="label-info bookFieldValue"><span v-html="row[field.field]"></span></span>
                     </h3>
                 </li>
             </ul>

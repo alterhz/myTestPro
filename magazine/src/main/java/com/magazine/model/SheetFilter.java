@@ -24,15 +24,7 @@ public class SheetFilter {
 
     }
 
-    /**
-     * 根据order排序后的的字段列表
-     */
-    public List<String> getSortFields() {
-        fields.sort(Comparator.comparingInt(ShowField::getOrder));
-        return fields.stream()
-                .map(ShowField::getField)
-                .collect(Collectors.toList());
-    }
+
 
     /**
      * 处理 {@link SheetRow}，过滤列，

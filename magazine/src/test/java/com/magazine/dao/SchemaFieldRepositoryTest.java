@@ -12,8 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest(classes = MagazineApplication.class)
-@ExtendWith(SpringExtension.class)
+//@SpringBootTest(classes = MagazineApplication.class)
+//@ExtendWith(SpringExtension.class)
 class SchemaFieldRepositoryTest {
 
     @Autowired
