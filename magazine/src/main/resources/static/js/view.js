@@ -6,7 +6,8 @@ var mySearch = new Vue({
     el: '#mySearch',
     data: {
         searchText: '',
-        searchField: '',
+        searchField: '',    //默认搜索字段
+        sortField: '',  //排序字段
         keys: {},   //检索字段的key
         showMore: false,    //是否显示多字段搜索
         fields: [], //字段列表
@@ -28,16 +29,11 @@ var mySearch = new Vue({
                     }
                     return true;
                 });
-
-
-
             } else {
                 // 默认单字段检索
                 console.log("单字段检索.this.searchText = " + this.searchText);
                 this.rows = filterRows.filter(row => row[this.searchField].indexOf(this.searchText) !== -1);
             }
-
-
         }
     }
 });
@@ -57,14 +53,14 @@ axios.get('/view?filter=' + filter)
         console.log(response);
         var myFields = response.data;
 
-        var searchField = myFields.searchField;
+        var sortField = myFields.sortField;
         // 按照搜索键进行排序
         sortRows = myFields.rows.concat();
-        if (searchField !== undefined && searchField.length > 0) {
+        if (sortField !== undefined && sortField.length > 0) {
             sortRows.sort(function(a, b) {
                 // {sensitivity: 'base'}
-                if (a[searchField] !== undefined && b[searchField] !== undefined) {
-                    return a[searchField].localeCompare(b[searchField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                if (a[sortField] !== undefined && b[sortField] !== undefined) {
+                    return a[sortField].localeCompare(b[sortField], 'zh-Hans-CN', {sensitivity: 'accent'});
                 } else {
                     return true;
                 }
@@ -85,7 +81,9 @@ axios.get('/view?filter=' + filter)
         });
 
         // 默认搜索字段
-        mySearch.searchField = searchField;
+        mySearch.searchField = myFields.searchField;
+        // 默认排序字段
+        mySearch.sortField = myFields.sortField;
         // 字段数据
         mySearch.fields = myFields.fields;
         // 原始数据，每次搜索都使用原始数据过滤

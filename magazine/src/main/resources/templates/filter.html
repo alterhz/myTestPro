@@ -98,7 +98,7 @@
                   <input id="sheet-name" class="form-control" v-model="filter.sheetName">
                 </div>
               </div>
-              <div class="col-sm-6" >
+              <div class="col-sm-8" >
                 <table class="table table-bordered" style="background:#fff">
                   <thead>
                     <tr>
@@ -107,6 +107,7 @@
                       <th>排序</th>
                       <th>搜索键</th>
                       <th>默认搜索键</th>
+                      <th>排序字段</th>
                       <th>操作</th>
                     </tr>
                   </thead>
@@ -122,11 +123,13 @@
                       </td>
                       <td><input class="form-control" v-model="field.order"></td>
                       <td><input type="checkbox" v-model="field.searchKey"></td>
-                      <td><input type="checkbox" v-model="field.defaultKey" @click="select(filter, field.field)"></td>
+                      <td><input type="checkbox" v-model="field.defaultKey" @click="selectDefaultKey(filter, field.field)"></td>
+                      <td><input type="checkbox" v-model="field.sortKey" @click="selectSortKey(filter, field.field)"></td>
                       <td><button class="btn btn-danger btn-xs" @click="filter.fields.splice(index, 1)">删除</button></td>
                     </tr>
                   <tr>
                     <th></th>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

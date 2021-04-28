@@ -44,7 +44,7 @@ var myFilter = new Vue({
             }
         }
     },
-    select: function(filter, key) {
+    selectDefaultKey: function(filter, key) {
         for (var key in filter.fields) {
             if (filter.fields[key].field == key) {
                 filter.fields[key].defaultKey = true;
@@ -52,7 +52,16 @@ var myFilter = new Vue({
                 filter.fields[key].defaultKey = false;
             }
         }
-    }
+    },
+    selectSortKey: function(filter, key) {
+            for (var key in filter.fields) {
+                if (filter.fields[key].field == key) {
+                    filter.fields[key].sortKey = true;
+                } else {
+                    filter.fields[key].sortKey = false;
+                }
+            }
+        }
   }
 });
 

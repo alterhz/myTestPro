@@ -15,6 +15,8 @@ public class ShowField {
     private Boolean searchKey;
     /** 默认检索键 */
     private Boolean defaultKey;
+    /** 默认排序字段 */
+    private Boolean sortKey;
 
     public static ShowField of(String field, Integer order) {
         final ShowField showField = new ShowField();
@@ -62,6 +64,14 @@ public class ShowField {
 
     public void setDefaultKey(Boolean defaultKey) {
         this.defaultKey = defaultKey;
+    }
+
+    public Boolean getSortKey() {
+        return sortKey;
+    }
+
+    public void setSortKey(Boolean sortKey) {
+        this.sortKey = sortKey;
     }
 
     @Override

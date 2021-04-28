@@ -23,7 +23,7 @@
                 <span class="input-group-btn">
                     <button class="btn btn-default" @click="search" >搜索</button>
                 </span>
-                <input v-model="searchText" @keyup.enter="search" class="form-control" placeholder="期刊名称" :disabled="showMore">
+                <input class="form-control" v-model="searchText" :placeholder="searchField" @keyup.enter="search" :disabled="showMore">
                 <span class="input-group-btn">
                     <button class="btn btn-default" @click="showMore = !showMore" >更多</button>
                 </span>
