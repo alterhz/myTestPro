@@ -1,8 +1,6 @@
 package com.magazine.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -16,10 +14,13 @@ public class Sheet {
     /** 页签名称 */
     private String sheetName;
 
+    /** 默认搜索字段 */
     private String searchField;
+    /** 排序字段 */
+    private String sortField;
 
     /** 显示的字段列表 */
-    private List<String> fields = new ArrayList<>();
+    private List<ShowField> fields = new ArrayList<>();
 
     /** keyValue格式数据 */
     private List<Map<String, Object>> rows;
@@ -35,21 +36,29 @@ public class Sheet {
         final Sheet sheet = new Sheet();
         sheet.setSheetName(sheetName);
         sheet.setSearchField(SearchField);
-        final List<String> fields = sheetFilter.getFields().stream()
-                .map(ShowField::getField)
-                .collect(Collectors.toList());
-        sheet.fields.addAll(fields);
+        sheet.fields.addAll(sheetFilter.getFields());
+        // 如果存在默认搜索键，则使用默认搜索。否则使用全局默认搜索键
+        sheet.fields.stream()
+                .filter(f -> f.getDefaultKey() != null && f.getDefaultKey())
+                .map(showField -> showField.getField())
+                .findAny()
+                .ifPresent(sheet::setSearchField);
+
+        // 默认全局搜索键为排序字段
+        sheet.setSortField(SearchField);
+        sheet.fields.stream()
+                .filter(f -> f.getSortKey() != null && f.getSortKey())
+                .map(showField -> showField.getField())
+                .findAny()
+                .ifPresent(sheet::setSortField);
+
+        // 按照order排序
+        sheet.fields.sort(Comparator.comparingInt(ShowField::getOrder));
         final List<Map<String, Object>> filterRows = rows.stream()
                 .map(keyValues -> sheetFilter.applyFilter(keyValues))
                 .collect(Collectors.toList());
         sheet.setRows(filterRows);
         return sheet;
-    }
-
-    public Sheet() {}
-
-    public Sheet(String sheetName) {
-        this.sheetName = sheetName;
     }
 
     public String getSheetName() {
@@ -60,11 +69,11 @@ public class Sheet {
         this.sheetName = sheetName;
     }
 
-    public List<String> getFields() {
+    public List<ShowField> getFields() {
         return fields;
     }
 
-    public void setFields(List<String> fields) {
+    public void setFields(List<ShowField> fields) {
         this.fields = fields;
     }
 
@@ -82,5 +91,13 @@ public class Sheet {
 
     public void setRows(List<Map<String, Object>> rows) {
         this.rows = rows;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
     }
 }

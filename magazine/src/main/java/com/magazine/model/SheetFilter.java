@@ -2,10 +2,7 @@ package com.magazine.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +23,8 @@ public class SheetFilter {
     public SheetFilter() {
 
     }
+
+
 
     /**
      * 处理 {@link SheetRow}，过滤列，

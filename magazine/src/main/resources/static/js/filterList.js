@@ -8,6 +8,20 @@ var myFilter = new Vue({
   },
   methods: {
     save: function(filter) {
+        // 只允许有一个默认搜索键
+//        let count = 0;
+//        for (var key in filter.fields) {
+//            if (filter.fields[key].defaultKey == true) {
+//                ++count;
+//            }
+//            console.log("field.defaultKey = " + filter.fields[key]);
+//        }
+//        console.log("count = " + count);
+//        if (count != 1) {
+//            alert("默认搜索键有且必须只有一个。");
+//            return;
+//        }
+
         console.log(filter);
         axios({
             method:'post',
@@ -29,7 +43,25 @@ var myFilter = new Vue({
                 console.debug("删除元素" + myFields[i]);
             }
         }
-    }
+    },
+    selectDefaultKey: function(filter, key) {
+        for (var key in filter.fields) {
+            if (filter.fields[key].field == key) {
+                filter.fields[key].defaultKey = true;
+            } else {
+                filter.fields[key].defaultKey = false;
+            }
+        }
+    },
+    selectSortKey: function(filter, key) {
+            for (var key in filter.fields) {
+                if (filter.fields[key].field == key) {
+                    filter.fields[key].sortKey = true;
+                } else {
+                    filter.fields[key].sortKey = false;
+                }
+            }
+        }
   }
 });
 

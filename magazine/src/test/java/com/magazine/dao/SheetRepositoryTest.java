@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ExtendWith(SpringExtension. class)
-@SpringBootTest(classes = MagazineApplication.class)
+//@ExtendWith(SpringExtension. class)
+//@SpringBootTest(classes = MagazineApplication.class)
 class SheetRepositoryTest {
 
     /** logger */
