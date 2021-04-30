@@ -10,9 +10,21 @@ var mySearch = new Vue({
         sortField: '',  //排序字段
         keys: {},   //检索字段的key
         showMore: false,    //是否显示多字段搜索
+        showContact: true,  //是否显示联系方式
         fields: [], //字段列表
         orgRows: [],    //原始行数据
         rows: []   //检索后的数据
+    },
+    watch: {
+        sortField: function(sortField, oldSortField) {
+            this.rows.sort(function(a, b) {
+                if (a[sortField] !== undefined && b[sortField] !== undefined) {
+                    return a[sortField].localeCompare(b[sortField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                } else {
+                    return true;
+                }
+            });
+        }
     },
     methods: {
         search: function() {
@@ -51,11 +63,11 @@ console.log(filter);
 axios.get('/view?filter=' + filter)
     .then(function(response) {
         console.log(response);
-        var myFields = response.data;
+        var mySheet = response.data;
 
-        var sortField = myFields.sortField;
+        var sortField = mySheet.sortField;
         // 按照搜索键进行排序
-        sortRows = myFields.rows.concat();
+        sortRows = mySheet.rows.concat();
         if (sortField !== undefined && sortField.length > 0) {
             sortRows.sort(function(a, b) {
                 // {sensitivity: 'base'}
@@ -80,16 +92,18 @@ axios.get('/view?filter=' + filter)
            }
         });
 
+
         // 默认搜索字段
-        mySearch.searchField = myFields.searchField;
+        mySearch.searchField = mySheet.searchField;
         // 默认排序字段
-        mySearch.sortField = myFields.sortField;
+        mySearch.sortField = mySheet.sortField;
+        // 是否显示联系方式
+        mySearch.showContact = mySheet.sheetFilter.showContact;
         // 字段数据
-        mySearch.fields = myFields.fields;
+        mySearch.fields = mySheet.sheetFilter.fields;
         // 原始数据，每次搜索都使用原始数据过滤
         mySearch.orgRows = sortRows;
         mySearch.rows = mySearch.orgRows.concat();
-//        console.log(mySearch.rows);
 
         runClipboard();
     })

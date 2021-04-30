@@ -20,7 +20,7 @@ public class Sheet {
     private String sortField;
 
     /** 显示的字段列表 */
-    private List<ShowField> fields = new ArrayList<>();
+    private SheetFilter sheetFilter;
 
     /** keyValue格式数据 */
     private List<Map<String, Object>> rows;
@@ -36,9 +36,9 @@ public class Sheet {
         final Sheet sheet = new Sheet();
         sheet.setSheetName(sheetName);
         sheet.setSearchField(SearchField);
-        sheet.fields.addAll(sheetFilter.getFields());
+        sheet.sheetFilter = sheetFilter;
         // 如果存在默认搜索键，则使用默认搜索。否则使用全局默认搜索键
-        sheet.fields.stream()
+        sheet.sheetFilter.getFields().stream()
                 .filter(f -> f.getDefaultKey() != null && f.getDefaultKey())
                 .map(showField -> showField.getField())
                 .findAny()
@@ -46,14 +46,14 @@ public class Sheet {
 
         // 默认全局搜索键为排序字段
         sheet.setSortField(SearchField);
-        sheet.fields.stream()
+        sheet.sheetFilter.getFields().stream()
                 .filter(f -> f.getSortKey() != null && f.getSortKey())
                 .map(showField -> showField.getField())
                 .findAny()
                 .ifPresent(sheet::setSortField);
 
         // 按照order排序
-        sheet.fields.sort(Comparator.comparingInt(ShowField::getOrder));
+        sheet.sheetFilter.getFields().sort(Comparator.comparingInt(ShowField::getOrder));
         final List<Map<String, Object>> filterRows = rows.stream()
                 .map(keyValues -> sheetFilter.applyFilter(keyValues))
                 .collect(Collectors.toList());
@@ -67,14 +67,6 @@ public class Sheet {
 
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
-    }
-
-    public List<ShowField> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<ShowField> fields) {
-        this.fields = fields;
     }
 
     public String getSearchField() {
@@ -99,5 +91,13 @@ public class Sheet {
 
     public void setSortField(String sortField) {
         this.sortField = sortField;
+    }
+
+    public SheetFilter getSheetFilter() {
+        return sheetFilter;
+    }
+
+    public void setSheetFilter(SheetFilter sheetFilter) {
+        this.sheetFilter = sheetFilter;
     }
 }

@@ -97,6 +97,11 @@
                   <label for="sheet-name">表格名称：</label>
                   <input id="sheet-name" class="form-control" v-model="filter.sheetName">
                 </div>
+                <div class="form-group">
+                  <label for="sheet-name">是否显示联系方式：</label>
+                  <input type="checkbox" v-model="filter.showContact">
+                </div>
+
               </div>
               <div class="col-sm-8" >
                 <table class="table table-bordered" style="background:#fff">
@@ -107,7 +112,7 @@
                       <th>排序</th>
                       <th>搜索键</th>
                       <th>默认搜索键</th>
-                      <th>排序字段</th>
+                      <th>默认排序字段</th>
                       <th>操作</th>
                     </tr>
                   </thead>

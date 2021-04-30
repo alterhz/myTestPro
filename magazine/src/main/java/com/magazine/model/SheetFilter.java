@@ -17,6 +17,8 @@ public class SheetFilter {
     private String filterName;
     /** 绑定的表名称 */
     private String sheetName;
+    /** 是否显示联系方式 */
+    private Boolean showContact;
     /** 过滤的列 */
     private List<ShowField> fields = new ArrayList<>();
 
@@ -97,11 +99,20 @@ public class SheetFilter {
         this.fields.add(showField);
     }
 
+    public Boolean getShowContact() {
+        return showContact;
+    }
+
+    public void setShowContact(Boolean showContact) {
+        this.showContact = showContact;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("filterName", filterName)
                 .append("sheetName", sheetName)
+                .append("showContact", showContact)
                 .append("fields", fields)
                 .toString();
     }
