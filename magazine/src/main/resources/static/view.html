@@ -19,32 +19,45 @@
     </div>
     <div class = "container">
         <div  class="col-xs-12" style="font-size: 3em; margin-top:20px">
-            <div  class="input-group">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" @click="search" >搜索</button>
-                </span>
-                <input class="form-control" v-model="searchText" :placeholder="searchField" @keyup.enter="search" :disabled="showMore">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" @click="showMore = !showMore" >更多</button>
-                </span>
-<!--                <span class="input-group">-->
-<!--                    <span class="input-group-addon" id="basic-addon1">排序字段</span>-->
-<!--                    <select class="form-control" v-model="sortField">-->
-<!--                        <option v-for="field in fields" :value="field.field">-->
-<!--                            {{ field.field }}-->
-<!--                        </option>-->
-<!--                    </select>-->
-<!--                </span>-->
+            <div class="col-xs-7">
+                <div  class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" @click="search" >搜索</button>
+                    </span>
+                    <input class="form-control" v-model="searchText" :placeholder="searchField" @keyup.enter="search" :disabled="showMore">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" @click="showMore = !showMore" >更多</button>
+                    </div>
+                </div><!-- /input-group -->
 
-            </div><!-- /input-group -->
-
-
-            <div v-if="showMore">
-                <div class="input-group form-inline" v-for="field in fields" :key="field" v-if="field.searchKey == true">
-                    <div class="input-group-addon">{{field.field}}</div>
-                    <input type="text" class="form-control" v-model="keys[field.field]" @keyup.enter="search">
+                <div v-if="showMore">
+                    <div class="input-group form-inline" v-for="field in fields" :key="field" v-if="field.searchKey == true">
+                        <div class="input-group-addon">{{field.field}}</div>
+                        <input type="text" class="form-control" v-model="keys[field.field]" @keyup.enter="search">
+                    </div>
                 </div>
             </div>
+            <div class="col-xs-5">
+                <div class="input-group">
+                    <span class="input-group-addon">排序</span>
+                    <div class="input-group-btn">
+                        <select class="form-control" v-model="sortField">
+                            <option v-for="field in fields" :value="field.field">
+                                {{ field.field }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group-btn">
+                        <select class="form-control" v-model="sortAsc">
+                            <option>升序</option>
+                            <option>降序</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div><!-- /.col-lg-6 -->
     </div>
     <br/>

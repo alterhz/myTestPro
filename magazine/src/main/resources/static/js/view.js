@@ -8,6 +8,7 @@ var mySearch = new Vue({
         searchText: '',
         searchField: '',    //默认搜索字段
         sortField: '',  //排序字段
+        sortAsc: '升序',  //升序或者降序
         keys: {},   //检索字段的key
         showMore: false,    //是否显示多字段搜索
         showContact: true,  //是否显示联系方式
@@ -17,13 +18,12 @@ var mySearch = new Vue({
     },
     watch: {
         sortField: function(sortField, oldSortField) {
-            this.rows.sort(function(a, b) {
-                if (a[sortField] !== undefined && b[sortField] !== undefined) {
-                    return a[sortField].localeCompare(b[sortField], 'zh-Hans-CN', {sensitivity: 'accent'});
-                } else {
-                    return true;
-                }
-            });
+//            console.log("sortField from =" + oldSortField + ", to =" + sortField);
+            this.refreshSort();
+        },
+        sortAsc: function(sortAsc, oldSortAsc) {
+//            console.log("sortAsc from =" + oldSortAsc + ", to =" + sortAsc);
+            this.refreshSort();
         }
     },
     methods: {
@@ -46,9 +46,45 @@ var mySearch = new Vue({
                 console.log("单字段检索.this.searchText = " + this.searchText);
                 this.rows = filterRows.filter(row => row[this.searchField].indexOf(this.searchText) !== -1);
             }
+        },
+        refreshSort: function() {
+            let sortAsc = this.sortAsc;
+            let sortField = this.sortField;
+            console.log('refresh sort. this.sortField = ' + this.sortField + ", this.sortAsc = " + this.sortAsc);
+            let sortType = 0;
+            for (let key in this.fields) {
+                if (this.fields[key].field === this.sortField) {
+                    sortType = this.fields[key].sortType;
+                    console.log("sortType = " + sortType);
+                    break;
+                }
+            }
+            this.rows.sort(function(a, b) {
+                        if (a[sortField] !== undefined && b[sortField] !== undefined) {
+                            if (sortType == 1) {
+                                // id列特殊处理
+                                if (sortAsc === '升序') {
+                                    return parseInt(a[sortField]) - parseInt(b[sortField]);
+                                } else {
+                                    return parseInt(b[sortField]) - parseInt(a[sortField]);
+                                }
+                            } else {
+                                if (sortAsc === '升序') {
+                                    return a[sortField].localeCompare(b[sortField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                                } else {
+                                    return b[sortField].localeCompare(a[sortField], 'zh-Hans-CN', {sensitivity: 'accent'});
+                                }
+                            }
+                        } else {
+                            console.log("sortField is error." + sortField);
+                            return true;
+                        }
+                    });
         }
     }
 });
+
+
 
 // 获取url参数
 function getQueryString(name) {

@@ -103,7 +103,7 @@
                 </div>
 
               </div>
-              <div class="col-sm-8" >
+              <div class="col-sm-10" >
                 <table class="table table-bordered" style="background:#fff">
                   <thead>
                     <tr>
@@ -113,6 +113,7 @@
                       <th>搜索键</th>
                       <th>默认搜索键</th>
                       <th>默认排序字段</th>
+                      <th>排序类型</th>
                       <th>操作</th>
                     </tr>
                   </thead>
@@ -130,10 +131,18 @@
                       <td><input type="checkbox" v-model="field.searchKey"></td>
                       <td><input type="checkbox" v-model="field.defaultKey" @click="selectDefaultKey(filter, field.field)"></td>
                       <td><input type="checkbox" v-model="field.sortKey" @click="selectSortKey(filter, field.field)"></td>
+                      <td><input type="checkbox" v-model="field.sortKey" @click="selectSortKey(filter, field.field)"></td>
+                      <td>
+                        <select v-model="field.sortType">
+                          <option value="0">中文字母表顺序</option>
+                          <option value="1">数值</option>
+                        </select>
+                      </td>
                       <td><button class="btn btn-danger btn-xs" @click="filter.fields.splice(index, 1)">删除</button></td>
                     </tr>
                   <tr>
                     <th></th>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

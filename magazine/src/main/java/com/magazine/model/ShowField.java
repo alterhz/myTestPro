@@ -17,6 +17,8 @@ public class ShowField {
     private Boolean defaultKey;
     /** 默认排序字段 */
     private Boolean sortKey;
+    /** 排序类型：0=默认排序;1=数值排序;2=汉字字母表顺序; */
+    private Integer sortType;
 
     public static ShowField of(String field, Integer order) {
         final ShowField showField = new ShowField();
@@ -74,6 +76,14 @@ public class ShowField {
         this.sortKey = sortKey;
     }
 
+    public Integer getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(Integer sortType) {
+        this.sortType = sortType;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -81,6 +91,8 @@ public class ShowField {
                 .append("order", order)
                 .append("searchKey", searchKey)
                 .append("defaultKey", defaultKey)
+                .append("sortKey", sortKey)
+                .append("sortType", sortType)
                 .toString();
     }
 }
