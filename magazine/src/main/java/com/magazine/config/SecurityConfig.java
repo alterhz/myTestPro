@@ -48,30 +48,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-
-        auth.inMemoryAuthentication().passwordEncoder(encoder)
-                .withUser("zhanglu").password(encoder.encode("zl_0401"))
-                .roles("USER")
-                .and().withUser("admin").password(encoder.encode("123"))
-                .roles("USER", "ADMIN");
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(encoder);
     }
 
-//    @Bean
-//    public UserDetailsService users() {
-//        // The builder will ensure the passwords are encoded before saving in memory
-//
-//        UserDetails user = User.builder()
-//                .username("zhanglu")
-//                .password(encoder.encode("zl_0401"))
-//                .roles("USER")
-//                .build();
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password(encoder.encode("123"))
-//                .roles("USER", "ADMIN")
-//                .build();
-//        return new InMemoryUserDetailsManager(user, admin);
-//    }
+    @Bean
+    public UserDetailsService users() {
+        // The builder will ensure the passwords are encoded before saving in memory
+        UserDetails user = User.builder()
+                .username("zhanglu")
+                .password(encoder.encode("zl_0401"))
+                .roles("USER")
+                .build();
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(encoder.encode("123"))
+                .roles("USER", "ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
+    }
 
 }
