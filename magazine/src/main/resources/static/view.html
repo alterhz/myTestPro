@@ -10,6 +10,13 @@
 
 <body>
 <div id="mySearch">
+    <div v-if="loading" class="container" style="position: absolute; top:0; right:0; bottom:0; left:0; border-radius: 0.25rem; backface-visibility: hidden; z-index:999; background-color: #FFFFFF; text-align:center; padding-top: 100;">
+        <div class="progress">
+            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                <span class="sr-only">45% Complete</span>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="row" v-if="showContact">
             <div class="col-sm-4"><img src="/images/contact.jpg" alt="联系方式" class="img-thumbnail"></div>

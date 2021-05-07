@@ -5,6 +5,7 @@
 var mySearch = new Vue({
     el: '#mySearch',
     data: {
+        loading: true,
         searchText: '',
         searchField: '',    //默认搜索字段
         sortField: '',  //排序字段
@@ -98,6 +99,7 @@ var filter = getQueryString("filter");
 console.log(filter);
 axios.get('/view?filter=' + filter)
     .then(function(response) {
+        mySearch.loading = false;
         console.log(response);
         var mySheet = response.data;
 
